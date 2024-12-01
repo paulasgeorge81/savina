@@ -15,22 +15,18 @@ run(NumMessages) ->
     PingPid ! {start_ping},
     receive
         done -> ok
-            % io:format("Benchmark completed~n")
     end.
 
 
 ping(0, PongPid, MainPid) ->
-    % io:format("Ping process finished.~n"),
     PongPid ! {stop},
     MainPid ! done;  
 ping(N, PongPid, MainPid) ->
     receive
         {start_ping} ->
-            % io:format("Ping received start_ping.~n"),
             PongPid ! {ping, self()},
             ping(N, PongPid, MainPid);
         {pong} ->
-            % io:format("Ping received pong ~p~n", [N]),
             PongPid ! {ping, self()},
             ping(N - 1, PongPid, MainPid)
     end.
@@ -38,10 +34,8 @@ ping(N, PongPid, MainPid) ->
 pong() ->
     receive
         {ping, PingPid} ->
-            % io:format("Pong received ping~n"),
             PingPid ! {pong},
             pong();
         {stop} -> ok
-            % io:format("Pong process finished.~n")
     end.
 
