@@ -4,6 +4,9 @@ import akka.actor.{ActorRef, Props}
 import edu.rice.habanero.actors.{AkkaActor, AkkaActorState}
 import edu.rice.habanero.benchmarks.pingpong.PingPongConfig.{Message, PingMessage, StartMessage, StopMessage}
 import edu.rice.habanero.benchmarks.{Benchmark, BenchmarkRunner}
+import java.io.{BufferedWriter, FileWriter}
+import scala.sys.process.{Process, ProcessLogger}
+
 
 /**
  *
@@ -12,7 +15,63 @@ import edu.rice.habanero.benchmarks.{Benchmark, BenchmarkRunner}
 object PingPongAkkaActorBenchmark {
 
   def main(args: Array[String]) {
+
+    // Start powermetrics before running the benchmark
+    val powerMetricsProcess = startPowerMetrics()
     BenchmarkRunner.runBenchmark(args, new PingPongAkkaActorBenchmark)
+
+    // Stop powermetrics after the benchmark
+    stopPowerMetrics(powerMetricsProcess)
+    println("Powermetrics captured. Review power_metrics.log for details.")
+  }
+
+  /**
+   * Start the powermetrics process and log the output.
+   * @return The process instance for later termination.
+   */
+
+   // Start powermetrics and write to a log file
+  def startPowerMetrics(): Process = {
+    // val powerMetricsCmd = Seq("sudo", "/usr/bin/powermetrics", "--show-all", "-i", "1000", "-n", "10")
+    val powerMetricsCmd = Seq("sudo", "/usr/bin/powermetrics", "-i", "1000", "-s", "all", "-a", "10", "-n", "5")
+    
+    // Log file to capture output
+    val logFile = new BufferedWriter(new FileWriter("power_metrics.log"))
+
+    // Process execution and logging
+    val processLogger = ProcessLogger(
+      (stdout: String) => {
+        logFile.write(stdout + "\n")
+        logFile.flush()  // Ensure data is written immediately
+      },
+      (stderr: String) => {
+        logFile.write(stderr + "\n")
+        logFile.flush()
+      }
+    )
+
+    // Run the command and handle any errors
+    try {
+      val process = Process(powerMetricsCmd).run(processLogger)
+      println("Powermetrics started...")
+      process
+    } catch {
+      case e: Exception => 
+        println(s"Error executing powermetrics: ${e.getMessage}")
+        null
+    }
+  }
+
+
+  /**
+   * Stop the powermetrics process and log the termination.
+   * @param process The running process instance.
+   */
+   def stopPowerMetrics(process: Process): Unit = {
+    if (process != null) {
+      process.destroy()
+      println("Powermetrics stopped.")
+    }
   }
 
   private final class PingPongAkkaActorBenchmark extends Benchmark {
