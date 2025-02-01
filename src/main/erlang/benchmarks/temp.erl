@@ -1,4 +1,4 @@
--module(benchmark_runner).
+-module(temp).
 -export([run/2]).
 % Power metrics functions
 -export([start_power_metrics/0, log_idle_power/0, trigger_power_sample/1, flush_power_data/1, stop_power_metrics/1]).
@@ -10,7 +10,6 @@ run(BenchmarkModule, NumIterations) ->
         % Start power metrics collection
         PowerMetricsPid = start_power_metrics(),
 
-    
         % Run the benchmark while triggering power samples
         Times = [measure_time(fun() -> 
             trigger_power_sample(PowerMetricsPid), % Take a power sample
@@ -25,7 +24,7 @@ run(BenchmarkModule, NumIterations) ->
         BestTime = lists:min(Times),
         WorstTime = lists:max(Times),
         AvgTime = lists:sum(Times) div NumIterations,
-         
+    
         io:format("Benchmark Results (~p iterations):~n", [NumIterations]),
         io:format("  Best Time: ~p microseconds~n", [BestTime]),
         io:format("  Worst Time: ~p microseconds~n", [WorstTime]),
@@ -54,21 +53,15 @@ start_power_metrics() ->
     io:format("PowerMetrics started with PID: ~p~nLogging to file: ~s~n", [Pid, LogFile]),
     Pid.
 
-
-
 % Trigger an immediate power sample
 trigger_power_sample(Pid) ->
     os:cmd("sudo kill -29 " ++ integer_to_list(Pid)).
-    % os:cmd("sudo kill -SIGINFO " ++ integer_to_list(Pid)).
-
 
 % Flush power data
 flush_power_data(Pid) ->
     os:cmd("sudo kill -23 " ++ integer_to_list(Pid)).
-    % os:cmd("sudo kill -SIGIO " ++ integer_to_list(Pid)).
 
 % Stop powermetrics
 stop_power_metrics(Pid) ->
     os:cmd("sudo kill -2 " ++ integer_to_list(Pid)),
-    % os:cmd("sudo kill -SIGINT " ++ integer_to_list(Pid)),
     io:format("PowerMetrics stopped.~n").

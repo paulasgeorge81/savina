@@ -1,0 +1,215 @@
+proc_pidpath 56648 failed(0)
+Machine model: MacBookPro15,2
+SMC version: Unknown
+EFI version: 2069.2.0
+OS version: 24B91
+Boot arguments: 
+Boot time: Wed Jan 15 05:52:30 2025
+
+proc_pidpath 56648 failed(0)
+
+
+*** Sampled system activity (Sat Feb  1 16:33:09 2025 +0100) (1040.73ms elapsed) ***
+
+*** Running tasks ***
+
+Name                               ID     CPU ms/s  User%  Deadlines (<2 ms, 2-5 ms)  Wakeups (Intr, Pkg idle)
+com.microsoft.VSCode               77198  388.62                                      277.50  111.96            
+  Code Helper (Renderer)           48674  121.73    90.29  0.96    0.96               27.76   16.27             
+  Code Helper (GPU)                48672  51.93     70.42  3.83    0.00               67.97   39.25             
+  java                             93319  44.78     64.65  22.97   0.00               48.82   14.36             
+  powermetrics                     69486  33.11     23.00  0.00    0.00               0.96    0.96              
+  Electron                         48604  22.38     65.71  25.85   0.00               29.68   2.87              
+  Code Helper (Plugin)             93215  13.97     60.43  33.50   0.00               45.95   21.06             
+  Code Helper                      53656  10.33     48.18  30.63   0.00               37.33   10.53             
+  beam.smp                         93238  4.21      87.67  4.79    0.00               10.53   4.79              
+  beam.smp                         94147  3.18      75.14  1.91    0.00               3.83    0.96              
+  Code Helper                      48680  0.70      29.22  1.91    0.00               2.87    0.00              
+  Code Helper                      48679  0.43      58.69  1.91    0.00               2.87    0.96              
+  Code Helper                      48673  0.06      76.28  0.00    0.00               0.96    0.00              
+org.mozilla.firefox                76019  143.13                                      89.95   38.28             
+  plugin-container                 88494  103.69    70.31  8.62    11.49              86.16   36.38             
+  plugin-container                 93043  19.95     72.98  0.00    0.00               0.00    0.00              
+  firefox                          92610  18.97     47.69  0.00    0.00               1.91    0.96              
+  plugin-container                 92884  0.80      73.91  0.00    0.00               1.91    0.96              
+DEAD_TASKS_COALITION                      147.31                                      0.00    0.00              
+  DEAD_TASKS                       -1     147.31    30.31  0.00    0.00               0.00    0.00              
+com.apple.WindowServer             141    49.45                                       32.53   24.88             
+  WindowServer                     167    49.27     63.43  14.36   0.00               31.59   24.89             
+kernel_coalition                   1      31.46                                       251.66  92.82             
+  kernel_task                      0      19.31     0.00   0.00    0.00               250.81  95.73             
+  launchd                          1      12.22     42.70  0.00    0.00               0.00    0.00              
+com.apple.audio.coreaudiod         209    26.47                                       94.73   56.46             
+  coreaudiod                       74829  26.45     81.85  0.00    0.00               93.81   56.48             
+  com.apple.audio.Core-Audio-Drive 74833  0.04      23.95  0.00    0.00               0.96    0.00              
+com.google.Chrome                  61595  2.76                                        11.48   4.78              
+  Google Chrome Helper             51960  2.36      64.18  0.00    0.00               5.74    3.83              
+  Google Chrome                    51738  0.21      75.42  0.00    0.00               1.91    0.96              
+  com.apple.appkit.xpc.openAndSave 73360  0.11      51.54  0.00    0.00               0.00    0.00              
+  Google Chrome Helper             51962  0.03      81.45  0.00    0.00               0.96    0.00              
+  Google Chrome Helper (Plugin)    52639  0.02      61.13  0.00    0.00               0.96    0.00              
+  Google Chrome Helper (Renderer)  72799  0.02      62.41  0.00    0.00               0.96    0.00              
+  Google Chrome Helper             52638  0.01      66.22  0.00    0.00               0.96    0.00              
+com.apple.distnoted.xpc.agent      443    2.43                                        0.00    0.00              
+  distnoted                        632    2.43      90.40  0.00    0.00               0.00    0.00              
+homebrew.mxcl.postgresql@14        887    1.76                                        2.87    1.91              
+  postgres                         48436  1.09      3.98   0.00    0.00               0.00    0.00              
+  postgres                         48435  0.64      22.49  0.00    0.00               1.91    0.96              
+  postgres                         48434  0.03      39.06  0.00    0.00               0.96    0.96              
+com.apple.distnoted.xpc.daemon     111    2.12                                        0.00    0.00              
+  distnoted                        152    2.12      59.65  0.00    0.00               0.00    0.00              
+com.apple.fseventsd                13     1.68                                        4.78    1.91              
+  fseventsd                        103    1.68      28.07  0.00    0.00               4.79    1.91              
+com.apple.airportd                 199    1.83                                        0.96    0.00              
+  airportd                         200    1.83      49.93  0.00    0.00               0.96    0.00              
+com.apple.logd                     5      1.02                                        1.91    0.96              
+  logd                             98     1.02      26.86  0.00    0.00               1.91    0.96              
+com.apple.bluetoothd               129    0.99                                        1.91    0.96              
+  bluetoothd                       161    0.99      56.91  0.00    0.00               1.91    0.96              
+com.apple.Spotlight                59     0.61                                        1.91    1.91              
+  mds                              126    0.61      52.45  0.00    0.00               1.91    1.91              
+com.apple.timesync.audioclocksyn   319    0.94                                        0.00    0.00              
+  audioclocksyncd                  317    0.94      51.75  0.00    0.00               0.00    0.00              
+com.apple.finder                   636    0.63                                        0.00    0.00              
+  Finder                           738    0.63      45.98  0.00    0.00               0.00    0.00              
+com.apple.notifyd                  131    0.56                                        0.00    0.00              
+  notifyd                          162    0.56      68.24  0.00    0.00               0.00    0.00              
+com.apple.opendirectoryd           81     0.56                                        0.00    0.00              
+  opendirectoryd                   137    0.56      52.98  0.00    0.00               0.00    0.00              
+com.apple.nearbyd                  628    0.34                                        1.91    0.96              
+  nearbyd                          733    0.34      37.10  0.00    0.00               1.91    0.96              
+com.apple.distnoted.xpc.agent      345    0.33                                        0.00    0.00              
+  distnoted                        357    0.33      30.09  0.00    0.00               0.00    0.00              
+com.apple.locationd                97     0.33                                        1.91    0.00              
+  locationd                        145    0.33      44.95  0.00    0.00               1.91    0.00              
+com.apple.cmio.uvcassistantexten   298    0.11                                        0.96    0.96              
+  UVCAssistant                     280    0.11      27.10  0.00    0.00               0.96    0.96              
+com.apple.distnoted.xpc.agent      235    0.30                                        0.00    0.00              
+  distnoted                        220    0.30      34.13  0.00    0.00               0.00    0.00              
+com.apple.itunescloudd             805    0.10                                        0.96    0.96              
+  itunescloudd                     887    0.10      40.47  0.00    0.00               0.96    0.96              
+com.apple.distnoted.xpc.agent      329    0.28                                        0.00    0.00              
+  distnoted                        325    0.28      34.79  0.00    0.00               0.00    0.00              
+com.apple.distnoted.xpc.agent      315    0.25                                        0.00    0.00              
+  distnoted                        315    0.25      41.69  0.00    0.00               0.00    0.00              
+com.apple.distnoted.xpc.agent      189    0.24                                        0.00    0.00              
+  distnoted                        194    0.24      47.18  0.00    0.00               0.00    0.00              
+com.apple.distnoted.xpc.agent      393    0.23                                        0.00    0.00              
+  distnoted                        532    0.23      35.79  0.00    0.00               0.00    0.00              
+com.apple.distnoted.xpc.agent      2983   0.23                                        0.00    0.00              
+  distnoted                        53607  0.23      32.60  0.00    0.00               0.00    0.00              
+com.apple.routined                 563    0.23                                        0.96    0.00              
+  routined                         695    0.23      27.54  0.00    0.00               0.96    0.00              
+com.apple.distnoted.xpc.agent      337    0.23                                        0.00    0.00              
+  distnoted                        338    0.23      37.19  0.00    0.00               0.00    0.00              
+com.apple.distnoted.xpc.agent      225    0.21                                        0.00    0.00              
+  distnoted                        214    0.21      38.44  0.00    0.00               0.00    0.00              
+com.apple.distnoted.xpc.agent      487    0.20                                        0.00    0.00              
+  distnoted                        654    0.20      33.23  0.00    0.00               0.00    0.00              
+com.apple.distnoted.xpc.agent      262    0.20                                        0.00    0.00              
+  distnoted                        241    0.20      38.65  0.00    0.00               0.00    0.00              
+com.apple.distnoted.xpc.agent      373    0.20                                        0.00    0.00              
+  distnoted                        476    0.20      35.55  0.00    0.00               0.00    0.00              
+com.apple.distnoted.xpc.agent      1373   0.19                                        0.00    0.00              
+  distnoted                        21316  0.19      35.20  0.00    0.00               0.00    0.00              
+com.apple.distnoted.xpc.agent      3812   0.18                                        0.00    0.00              
+  distnoted                        21104  0.18      36.55  0.00    0.00               0.00    0.00              
+com.apple.distnoted.xpc.agent      555    0.17                                        0.00    0.00              
+  distnoted                        691    0.17      40.37  0.00    0.00               0.00    0.00              
+com.apple.systemstatusd            242    0.15                                        0.96    0.00              
+  systemstatusd                    224    0.15      24.31  0.00    0.00               0.96    0.00              
+com.apple.GameController.gamecon   927    0.12                                        0.96    0.00              
+  gamecontrolleragentd             2068   0.12      43.97  0.00    0.00               0.96    0.00              
+com.apple.mDNSResponder.reloaded   258    0.10                                        2.87    0.00              
+  mDNSResponder                    237    0.10      37.80  0.96    0.00               2.87    0.00              
+com.apple.parsecd                  788    0.09                                        0.96    0.00              
+  parsecd                          877    0.09      32.73  0.00    0.00               0.96    0.00              
+com.apple.controlcenter            632    0.08                                        0.96    0.00              
+  ControlCenter                    736    0.08      35.10  0.00    0.00               0.96    0.00              
+com.apple.networkserviceproxy      696    0.07                                        0.96    0.00              
+  networkserviceproxy              775    0.07      25.99  0.00    0.00               0.96    0.00              
+com.apple.wifip2pd                 321    0.06                                        0.96    0.00              
+  wifip2pd                         318    0.06      22.36  0.00    0.00               0.96    0.00              
+com.openmedia.4kvideodownloaderp   32005  0.06                                        1.91    0.00              
+  QtWebEngineProcess               56782  0.03      57.31  0.00    0.00               0.96    0.00              
+  QtWebEngineProcess               56781  0.03      58.59  0.00    0.00               0.96    0.00              
+com.apple.Maps.mapssyncd           942    0.06                                        0.96    0.00              
+  mapssyncd                        2301   0.06      27.18  0.00    0.00               0.96    0.00              
+com.apple.duetexpertd              519    0.05                                        0.96    0.00              
+  duetexpertd                      670    0.05      31.27  0.00    0.00               0.96    0.00              
+com.apple.wifi.WiFiAgent           698    0.05                                        0.96    0.00              
+  WiFiAgent                        777    0.05      22.66  0.00    0.00               0.96    0.00              
+com.apple.homed                    565    0.05                                        0.96    0.00              
+  homed                            696    0.05      28.65  0.00    0.00               0.96    0.00              
+com.apple.mobiletimerd             531    0.04                                        0.96    0.00              
+  mobiletimerd                     676    0.04      22.21  0.00    0.00               0.96    0.00              
+com.apple.mDNSResponderHelper.re   284    0.02                                        0.96    0.00              
+  mDNSResponderHelper              267    0.02      46.63  0.00    0.00               0.96    0.00              
+ALL_TASKS                          -2     730.42    58.94  152.78  12.49              798.48  343.99            
+
+**** Processor usage ****
+
+Intel energy model derived package power (CPUs+GT+SA): 5.09W
+
+Intel energy model derived CPU core power: 2.63W
+Intel energy model derived GT power: 0.0751W
+Intel energy model derived DRAM power: 0.837W
+LLC flushed residency: 45.5%
+
+System Average frequency as fraction of nominal: 90.66% (2175.93 Mhz)
+System instructions retired: 1.15443e+09/s
+System instructions per clock: 0.721879
+System PMC frequency ratio: 0.892961
+Package 0 idle exit rate: 567.87/s
+Package 0 instantaneous ring ratio: 0x1b
+Package 0 IA clipping cause: 0x30000000
+Package 0 GT clipping cause: 0x00000000
+Package 0 C-state residency: 47.97% (C2: 7.52% C3: 40.45% C6: 0.00% C7: 0.00% C8: 0.00% C9: 0.00% C10: 0.00% )
+
+Performance Limited Due to:
+CPU LIMIT MAX_TURBO_LIMIT
+CPU LIMIT TURBO_ATTENUATION
+CPU/GPU Overlap: 2.80%
+Cores Active: 44.86%
+GPU Active: 3.12%
+Avg Num of Cores Active: 0.75
+
+Core 0 C-state residency: 67.51% (C3: 1.42% C6: 0.00% C7: 66.09% )
+CPU Average frequency as fraction of nominal: 91.20% (2188.87 Mhz)
+CPU instructions retired: 4.75899e+08/s
+CPU instructions per clock: 0.878524
+CPU PMC frequency ratio: 0.903114
+CPU Average frequency as fraction of nominal: 85.19% (2044.51 Mhz)
+CPU instructions retired: 5.4103e+06/s
+CPU instructions per clock: 0.235151
+CPU PMC frequency ratio: 0.787691
+
+Core 1 C-state residency: 71.90% (C3: 2.38% C6: 0.00% C7: 69.52% )
+CPU Average frequency as fraction of nominal: 89.12% (2138.99 Mhz)
+CPU instructions retired: 2.88797e+08/s
+CPU instructions per clock: 0.708937
+CPU PMC frequency ratio: 0.881215
+CPU Average frequency as fraction of nominal: 111.49% (2675.71 Mhz)
+CPU instructions retired: 1.38044e+07/s
+CPU instructions per clock: 0.439518
+CPU PMC frequency ratio: 0.974597
+
+Core 2 C-state residency: 77.10% (C3: 0.23% C6: 0.00% C7: 76.87% )
+CPU Average frequency as fraction of nominal: 86.04% (2065.01 Mhz)
+CPU instructions retired: 1.65287e+08/s
+CPU instructions per clock: 0.58525
+CPU PMC frequency ratio: 0.851157
+CPU Average frequency as fraction of nominal: 85.76% (2058.29 Mhz)
+CPU instructions retired: 4.15569e+06/s
+CPU instructions per clock: 0.195862
+CPU PMC frequency ratio: 0.801202
+
+Core 3 C-state residency: 82.62% (C3: 0.18% C6: 0.00% C7: 82.44% )
+CPU Average frequency as fraction of nominal: 96.31% (2311.55 Mhz)
+CPU instructions retired: 1.96532e+08/s
+CPU instructions per clock: 0.708906
+CPU PMC frequency ratio: 0.950702
+CPU Average frequency as fraction of nominal: 89.76% (2154.27 Mhz)
+CPU instructions retired: 4.54514e+06/s
+CPU instructions per clock: 0.306171
+CPU PMC frequency ratio: 0.849812
