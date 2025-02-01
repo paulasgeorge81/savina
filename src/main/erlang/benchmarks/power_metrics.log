@@ -1,0 +1,78 @@
+Machine model: MacBookPro15,2
+SMC version: Unknown
+EFI version: 2069.2.0
+OS version: 24B91
+Boot arguments: 
+Boot time: Wed Jan 15 05:52:30 2025
+
+
+
+*** Sampled system activity (Sat Feb  1 11:51:21 2025 +0100) (1003.92ms elapsed) ***
+
+
+**** Processor usage ****
+
+Intel energy model derived package power (CPUs+GT+SA): 23.39W
+
+Intel energy model derived CPU core power: 20.9W
+Intel energy model derived GT power: 0.0448W
+Intel energy model derived DRAM power: 0.77W
+LLC flushed residency: 0%
+
+System Average frequency as fraction of nominal: 163.92% (3934.09 Mhz)
+System instructions retired: 8.36698e+09/s
+System instructions per clock: 0.955759
+System PMC frequency ratio: 1.63527
+Package 0 idle exit rate: 1.99/s
+Package 0 instantaneous ring ratio: 0x25
+Package 0 IA clipping cause: 0x30002000
+Package 0 GT clipping cause: 0x00000000
+Package 0 C-state residency: 0.00% (C2: 0.00% C3: 0.00% C6: 0.00% C7: 0.00% C8: 0.00% C9: 0.00% C10: 0.00% )
+
+Performance Limited Due to:
+CPU LIMIT MAX_TURBO_LIMIT
+CPU LIMIT TURBO_ATTENUATION
+CPU/GPU Overlap: 1.32%
+Cores Active: 95.29%
+GPU Active: 1.44%
+Avg Num of Cores Active: 2.13
+
+Core 0 C-state residency: 20.77% (C3: 0.15% C6: 0.00% C7: 20.62% )
+CPU Average frequency as fraction of nominal: 164.11% (3938.69 Mhz)
+CPU instructions retired: 2.44907e+09/s
+CPU instructions per clock: 1.00639
+CPU PMC frequency ratio: 1.63727
+CPU Average frequency as fraction of nominal: 162.68% (3904.25 Mhz)
+CPU instructions retired: 1.45897e+08/s
+CPU instructions per clock: 0.728968
+CPU PMC frequency ratio: 1.62407
+
+Core 1 C-state residency: 24.99% (C3: 0.22% C6: 0.00% C7: 24.77% )
+CPU Average frequency as fraction of nominal: 164.01% (3936.16 Mhz)
+CPU instructions retired: 2.05262e+09/s
+CPU instructions per clock: 0.97646
+CPU PMC frequency ratio: 1.63614
+CPU Average frequency as fraction of nominal: 162.62% (3902.95 Mhz)
+CPU instructions retired: 1.12759e+08/s
+CPU instructions per clock: 0.652838
+CPU PMC frequency ratio: 1.6234
+
+Core 2 C-state residency: 30.34% (C3: 0.26% C6: 0.00% C7: 30.08% )
+CPU Average frequency as fraction of nominal: 163.96% (3935.16 Mhz)
+CPU instructions retired: 1.78613e+09/s
+CPU instructions per clock: 0.968438
+CPU PMC frequency ratio: 1.63574
+CPU Average frequency as fraction of nominal: 162.59% (3902.09 Mhz)
+CPU instructions retired: 7.63243e+07/s
+CPU instructions per clock: 0.514842
+CPU PMC frequency ratio: 1.62309
+
+Core 3 C-state residency: 29.95% (C3: 0.91% C6: 0.00% C7: 29.05% )
+CPU Average frequency as fraction of nominal: 163.91% (3933.79 Mhz)
+CPU instructions retired: 1.64116e+09/s
+CPU instructions per clock: 0.965348
+CPU PMC frequency ratio: 1.63518
+CPU Average frequency as fraction of nominal: 163.08% (3913.82 Mhz)
+CPU instructions retired: 1.03014e+08/s
+CPU instructions per clock: 0.672719
+CPU PMC frequency ratio: 1.62734

@@ -8,17 +8,18 @@ start_benchmark(NumIterations) ->
 
      % run the benchmark
     Times = [measure_time(fun() -> run(10000) end) || _ <- lists:seq(1, NumIterations)],
-    BestTime = lists:min(Times),
-    WorstTime = lists:max(Times),
-    AvgTime = lists:sum(Times) div NumIterations,
-    
-    io:format("Benchmark Results (~p iterations):~n", [NumIterations]),
-    io:format("  Best Time: ~p microseconds~n", [BestTime]),
-    io:format("  Worst Time: ~p microseconds~n", [WorstTime]),
-    io:format("  Average Time: ~p microseconds~n", [AvgTime]),
-    
+
      % Stop power metrics collection after the benchmark
-     stop_power_metrics(PowerMetricsPid).
+     stop_power_metrics(PowerMetricsPid),
+
+     BestTime = lists:min(Times),
+     WorstTime = lists:max(Times),
+     AvgTime = lists:sum(Times) div NumIterations,
+     
+     io:format("Benchmark Results (~p iterations):~n", [NumIterations]),
+     io:format("  Best Time: ~p microseconds~n", [BestTime]),
+     io:format("  Worst Time: ~p microseconds~n", [WorstTime]),
+     io:format("  Average Time: ~p microseconds~n", [AvgTime]).
 
 % Measure execution time of a function
 measure_time(Fun) ->
@@ -60,8 +61,10 @@ pong() ->
 
 % Start powermetrics process to log power consumption
 start_power_metrics() ->
-    % PowerMetricsCmd = "sudo /usr/bin/powermetrics --show-all -i 1000 -n 10",
-    PowerMetricsCmd = "sudo /usr/bin/powermetrics -i 1000 -s all -a 10 -n 5",
+    % PowerMetricsCmd = "sudo /usr/bin/powermetrics -i 1000 -s all -a 10 -n 5",
+    % PowerMetricsCmd = "sudo /usr/bin/powermetrics -i 50 -s cpu_power -a 0 -n 5 --hide-cpu-duty-cycle",
+    % PowerMetricsCmd = "sudo /usr/bin/powermetrics -i 1000 -n 10 -s cpu_power,gpu_power,thermal --show-process-energy --show-extra-power-info",
+    PowerMetricsCmd = "sudo powermetrics -s cpu_power -n 1 -i 1000 -a 0  --hide-cpu-duty-cycle --show-extra-power-info",
     
     % {ok, LogFile} = file:open("power_metrics.log", [write, raw]),
     {Pid, _Ref} = spawn_monitor(fun() -> run_power_metrics(PowerMetricsCmd) end),
