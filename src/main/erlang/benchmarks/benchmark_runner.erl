@@ -1,7 +1,7 @@
 -module(benchmark_runner).
 -export([run/2]).
 % Power metrics functions
--export([start_power_metrics/0, log_idle_power/0, trigger_power_sample/1, flush_power_data/1, stop_power_metrics/1]).
+-export([start_power_metrics/0, log_idle_power/0, trigger_power_sample/1, flush_power_data/1, stop_power_metrics/1, generate_log_filename/1]).
 
 run(BenchmarkModule, NumIterations) ->
         % Log idle power consumption before benchmarking
@@ -9,7 +9,6 @@ run(BenchmarkModule, NumIterations) ->
 
         % Start power metrics collection
         PowerMetricsPid = start_power_metrics(),
-
     
         % Run the benchmark while triggering power samples
         Times = [measure_time(fun() -> 
@@ -36,22 +35,35 @@ measure_time(Fun) ->
     {Time, _Result} = timer:tc(Fun),
     Time.
 
+
 log_idle_power() ->
-    IdleLogFile = "idle_power_metrics.log",
-    os:cmd("sudo powermetrics -s cpu_power -n 1 -i 1000 -a 0 --hide-cpu-duty-cycle --show-extra-power-info > " ++ IdleLogFile ++ " 2>&1 & sleep 2; sudo pkill -2 powermetrics"),
+    % Timestamp = calendar:universal_time(),
+    % {Date, Time} = Timestamp,  % Extract date and time tuples
+    % FormattedTimestamp = io_lib:format("~p_~p_~p_~p:~p:~p", tuple_to_list(Date) ++ tuple_to_list(Time)),
+    % IdleLogFile = "idle_power_" ++ lists:flatten(FormattedTimestamp) ++ ".log",
+    IdleLogFile = generate_log_filename("idle_power"),
+    PowerMetricsCmd = "sudo powermetrics -s cpu_power -n 5 -i 1000 -a 0 --hide-cpu-duty-cycle --show-extra-power-info > " ++ IdleLogFile ++ " 2>&1", 
+    os:cmd(PowerMetricsCmd),
+    timer:sleep(6000),  % Give time to capture idle power samples
+    os:cmd("sudo pkill -2 powermetrics"),
     IdleLogFile.
+    
+
 
 start_power_metrics() ->
-    Timestamp = calendar:universal_time(),
-    {Date, Time} = Timestamp,  % Extract date and time tuples
-    FormattedTimestamp = io_lib:format("~p_~p_~p_~p:~p:~p", tuple_to_list(Date) ++ tuple_to_list(Time)),
-    LogFile = "power_metrics_" ++ lists:flatten(FormattedTimestamp) ++ ".log",
+    % Timestamp = calendar:universal_time(),
+    % {Date, Time} = Timestamp,  % Extract date and time tuples
+    % FormattedTimestamp = io_lib:format("~p_~p_~p_~p:~p:~p", tuple_to_list(Date) ++ tuple_to_list(Time)),
+    % LogFile = "power_metrics_" ++ lists:flatten(FormattedTimestamp) ++ ".log",
 
-    PowerMetricsCmd = "sudo powermetrics -s cpu_power -n 1 -i 1000 -a 0 --hide-cpu-duty-cycle --show-extra-power-info > " 
-                      ++ LogFile ++ " 2>&1 & echo $!",
+    % PowerMetricsCmd = "sudo powermetrics -s cpu_power -n 1 -i 1000 -a 0 --hide-cpu-duty-cycle --show-extra-power-info > " 
+    %                   ++ LogFile ++ " 2>&1 & echo $!",
+    BenchmarkLogFile = generate_log_filename("power_metrics"),
+    PowerMetricsCmd = "sudo powermetrics -s cpu_power -i 10000 -a 0 --hide-cpu-duty-cycle --show-extra-power-info > " 
+                      ++ BenchmarkLogFile ++ " 2>&1 & echo $!",
     PidStr = string:trim(os:cmd(PowerMetricsCmd)),  % Trim newline
     Pid = list_to_integer(PidStr), % Convert to integer
-    io:format("PowerMetrics started with PID: ~p~nLogging to file: ~s~n", [Pid, LogFile]),
+    io:format("PowerMetrics started with PID: ~p~nLogging to file: ~s~n", [Pid, BenchmarkLogFile]),
     Pid.
 
 
@@ -69,6 +81,15 @@ flush_power_data(Pid) ->
 
 % Stop powermetrics
 stop_power_metrics(Pid) ->
-    os:cmd("sudo kill -2 " ++ integer_to_list(Pid)),
+    os:cmd("sudo kill -15 " ++ integer_to_list(Pid)),
+    % os:cmd("sudo kill -SIGTERM " ++ integer_to_list(Pid)),
+    % os:cmd("sudo kill -2 " ++ integer_to_list(Pid)),
     % os:cmd("sudo kill -SIGINT " ++ integer_to_list(Pid)),
-    io:format("PowerMetrics stopped.~n").
+    {_Date, Time} = calendar:universal_time(),
+    FormattedTimestamp = io_lib:format("~p:~p:~p", tuple_to_list(Time)),
+    io:format("PowerMetrics stopped at ~p.~n",[lists:flatten(FormattedTimestamp)]).
+
+generate_log_filename(BaseName) ->
+    {{Year, Month, Day}, {Hour, Min, Sec}} = calendar:universal_time(),
+    lists:flatten(io_lib:format("~s_~p_~p_~p_~p_~p_~p.log", 
+                [BaseName, Year, Month, Day, Hour, Min, Sec])).
