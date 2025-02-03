@@ -5,16 +5,14 @@
 
 run(BenchmarkModule, NumIterations) ->
         % Log idle power consumption before benchmarking
-        IdlePower = log_idle_power(),
+        IdlePowerLogFile = log_idle_power(),
 
         % Start power metrics collection
-        PowerMetricsPid = start_power_metrics(),
+        {PowerMetricsPid, BenchmarkLogFile} = start_power_metrics(),
     
         % Run the benchmark while triggering power samples
         Times = [measure_time(fun() -> 
-            trigger_power_sample(PowerMetricsPid), % Take a power sample
-            BenchmarkModule:run(),
-            flush_power_data(PowerMetricsPid) % Flush power data
+            BenchmarkModule:run()
         end) || _ <- lists:seq(1, NumIterations)],
     
         % Stop power metrics collection
@@ -29,7 +27,8 @@ run(BenchmarkModule, NumIterations) ->
         io:format("  Best Time: ~p microseconds~n", [BestTime]),
         io:format("  Worst Time: ~p microseconds~n", [WorstTime]),
         io:format("  Average Time: ~p microseconds~n", [AvgTime]),
-        io:format("  Idle Power Consumption: ~s~n", [IdlePower]).
+        io:format("  Idle Power Log File: ~s~n", [IdlePowerLogFile]),
+        io:format("  Benchmark Power Log File: ~s~n", [BenchmarkLogFile]).
 
 measure_time(Fun) ->
     {Time, _Result} = timer:tc(Fun),
@@ -37,34 +36,31 @@ measure_time(Fun) ->
 
 
 log_idle_power() ->
-    % Timestamp = calendar:universal_time(),
-    % {Date, Time} = Timestamp,  % Extract date and time tuples
-    % FormattedTimestamp = io_lib:format("~p_~p_~p_~p:~p:~p", tuple_to_list(Date) ++ tuple_to_list(Time)),
-    % IdleLogFile = "idle_power_" ++ lists:flatten(FormattedTimestamp) ++ ".log",
     IdleLogFile = generate_log_filename("idle_power"),
     PowerMetricsCmd = "sudo powermetrics -s cpu_power -n 5 -i 1000 -a 0 --hide-cpu-duty-cycle --show-extra-power-info > " ++ IdleLogFile ++ " 2>&1", 
     os:cmd(PowerMetricsCmd),
-    timer:sleep(6000),  % Give time to capture idle power samples
+    timer:sleep(5000),  % Give time to capture idle power samples
     os:cmd("sudo pkill -2 powermetrics"),
     IdleLogFile.
     
 
 
 start_power_metrics() ->
-    % Timestamp = calendar:universal_time(),
-    % {Date, Time} = Timestamp,  % Extract date and time tuples
-    % FormattedTimestamp = io_lib:format("~p_~p_~p_~p:~p:~p", tuple_to_list(Date) ++ tuple_to_list(Time)),
-    % LogFile = "power_metrics_" ++ lists:flatten(FormattedTimestamp) ++ ".log",
-
     % PowerMetricsCmd = "sudo powermetrics -s cpu_power -n 1 -i 1000 -a 0 --hide-cpu-duty-cycle --show-extra-power-info > " 
     %                   ++ LogFile ++ " 2>&1 & echo $!",
     BenchmarkLogFile = generate_log_filename("power_metrics"),
-    PowerMetricsCmd = "sudo powermetrics -s cpu_power -i 10000 -a 0 --hide-cpu-duty-cycle --show-extra-power-info > " 
+    PowerMetricsCmd = "sudo powermetrics -s cpu_power -i 1000 -a 0 --hide-cpu-duty-cycle --show-extra-power-info > " 
                       ++ BenchmarkLogFile ++ " 2>&1 & echo $!",
     PidStr = string:trim(os:cmd(PowerMetricsCmd)),  % Trim newline
-    Pid = list_to_integer(PidStr), % Convert to integer
-    io:format("PowerMetrics started with PID: ~p~nLogging to file: ~s~n", [Pid, BenchmarkLogFile]),
-    Pid.
+    timer:sleep(1000), 
+    case catch list_to_integer(PidStr) of
+        Pid when is_integer(Pid) -> 
+            io:format("PowerMetrics started with PID: ~p~nLogging to file: ~s~n", [Pid, BenchmarkLogFile]),
+            {Pid, BenchmarkLogFile};
+        _ ->
+            io:format("Failed to start PowerMetrics. Output: ~s~n", [PidStr]),
+            exit(start_power_metrics_failed)
+    end.
 
 
 
@@ -91,5 +87,5 @@ stop_power_metrics(Pid) ->
 
 generate_log_filename(BaseName) ->
     {{Year, Month, Day}, {Hour, Min, Sec}} = calendar:universal_time(),
-    lists:flatten(io_lib:format("~s_~p_~p_~p_~p_~p_~p.log", 
+    lists:flatten(io_lib:format("~s_~p_~p_~p_~p:~p:~p.log", 
                 [BaseName, Year, Month, Day, Hour, Min, Sec])).

@@ -3,6 +3,8 @@ package edu.rice.habanero.benchmarks;
 import edu.rice.habanero.actors.AkkaActorState;
 import edu.rice.hj.runtime.config.HjSystemProperty;
 
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -60,6 +62,12 @@ public class BenchmarkRunner {
         System.out.printf(argOutputFormat, "O/S Name", System.getProperty("os.name"));
         System.out.printf(argOutputFormat, "O/S Arch", System.getProperty("os.arch"));
 
+        String idlePowerLog = logIdlePower();
+        System.out.println("Idle Power Log File: " + idlePowerLog);
+
+        String benchmarkPowerLog = startPowerMetrics();
+        System.out.println("Benchmark Power Log File: " + benchmarkPowerLog);
+
         final List<Double> rawExecTimes = new ArrayList<>(iterations);
 
         {
@@ -77,9 +85,10 @@ public class BenchmarkRunner {
                 benchmark.cleanupIteration(i + 1 == iterations, execTimeMillis);
             }
             System.out.println();
-
+            
         }
         System.out.println();
+        stopPowerMetrics();
 
         final Map<String, List<Double>> customAttrs = benchmark.customAttrs;
         if (!customAttrs.isEmpty()) {
@@ -115,6 +124,45 @@ public class BenchmarkRunner {
         System.out.printf(statDataOutputFormat, benchmark.name(), " Skewness", skewness(execTimes));
 
         System.out.println();
+    }
+
+
+    private static String logIdlePower() {
+        String logFile = generateLogFilename("idle_power");
+        executeCommand("sudo powermetrics -s cpu_power -n 5 -i 1000 -a 0 --hide-cpu-duty-cycle --show-extra-power-info > " + logFile + " &");
+        try { Thread.sleep(5000); } catch (InterruptedException e) { e.printStackTrace(); }
+        stopPowerMetrics();
+        return logFile;
+    }
+
+
+    private static String startPowerMetrics() {
+        String logFile = generateLogFilename("power_metrics");
+        String PowerMetricsCmd = "sudo powermetrics -s cpu_power -i 1000 -a 0 --hide-cpu-duty-cycle --show-extra-power-info > " 
+        + logFile + " 2>&1 & echo $!";
+        executeCommand(PowerMetricsCmd);
+        try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
+        // executeCommand("sudo powermetrics -s cpu_power -i 1000 -a 0 --hide-cpu-duty-cycle --show-extra-power-info > " + logFile + " 2>&1 & echo $!");
+        return logFile;
+    }
+
+   
+    private static void stopPowerMetrics() {
+        executeCommand("sudo pkill -2 powermetrics");
+    }
+
+     private static void executeCommand(String command) {
+        try {
+            Process process = new ProcessBuilder("bash", "-c", command).start();
+            process.waitFor();
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static String generateLogFilename(String baseName) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd_HH:mm:ss");
+        return baseName + "_" + sdf.format(new Date()) + ".log";
     }
 
     public static List<Double> sanitize(final List<Double> rawList, final double tolerance) {
