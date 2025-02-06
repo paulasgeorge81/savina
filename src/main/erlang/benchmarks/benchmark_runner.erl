@@ -1,7 +1,15 @@
 -module(benchmark_runner).
 -export([run/2]).
+
 % Power metrics functions
 -export([start_power_metrics/0, log_idle_power/0,stop_power_metrics/0, generate_log_filename/1]).
+
+% Statistics functions
+-export([
+    median/1, arithmetic_mean/1, geometric_mean/1, harmonic_mean/1,
+    standard_deviation/1, confidence_low/1, confidence_high/1,
+    coefficient_of_variation/1, skewness/1
+]).
 
 run(BenchmarkModule, NumIterations) ->
         % Log idle power consumption before benchmarking
@@ -11,7 +19,7 @@ run(BenchmarkModule, NumIterations) ->
         BenchmarkLogFile = start_power_metrics(),
     
         % Run the benchmark while triggering power samples
-        Times = [measure_time(fun() -> 
+        ExecTimes = [measure_time(fun() -> 
             BenchmarkModule:run()
         end) || _ <- lists:seq(1, NumIterations)],
     
@@ -19,14 +27,38 @@ run(BenchmarkModule, NumIterations) ->
         stop_power_metrics(),
     
         % Compute benchmark statistics
-        BestTime = lists:min(Times),
-        WorstTime = lists:max(Times),
-        AvgTime = lists:sum(Times) div NumIterations,
-         
+        RawExecTimes = ExecTimes,
+        FilteredExecTimes = lists:sort(ExecTimes),
+        BestTime = hd(FilteredExecTimes),
+        WorstTime = lists:last(FilteredExecTimes),
+        MedianTime = median(FilteredExecTimes),
+        ArithMean = arithmetic_mean(FilteredExecTimes),
+        GeoMean = geometric_mean(FilteredExecTimes),
+        HarmMean = harmonic_mean(FilteredExecTimes),
+        StdDev = standard_deviation(FilteredExecTimes),
+        ConfLow = confidence_low(FilteredExecTimes),
+        ConfHigh = confidence_high(FilteredExecTimes),
+        ErrorWindow = ConfHigh - ArithMean,
+        ErrorPercent = 100 * ErrorWindow / ArithMean,
+        CoeffVar = coefficient_of_variation(FilteredExecTimes),
+        Skew = skewness(FilteredExecTimes),
+        
+        io:format("Execution - Summary: ~n"),
         io:format("Benchmark Results (~p iterations):~n", [NumIterations]),
-        io:format("  Best Time: ~p microseconds~n", [BestTime]),
-        io:format("  Worst Time: ~p microseconds~n", [WorstTime]),
-        io:format("  Average Time: ~p microseconds~n", [AvgTime]),
+        io:format("Total executions: ~p~n", [length(RawExecTimes)]),
+        io:format("Filtered executions: ~p~n", [length(FilteredExecTimes)]),
+        io:format("~s Best Time: ~p~n", [?MODULE, BestTime]),
+        io:format("~s Worst Time: ~p~n", [?MODULE, WorstTime]),
+        io:format("~s Median: ~p~n", [?MODULE, MedianTime]),
+        io:format("~s Arith. Mean Time: ~p~n", [?MODULE, ArithMean]),
+        io:format("~s Geo. Mean Time: ~p~n", [?MODULE, GeoMean]),
+        io:format("~s Harmonic Mean Time: ~p~n", [?MODULE, HarmMean]),
+        io:format("~s Std. Dev Time: ~p~n", [?MODULE, StdDev]),
+        io:format("~s Lower Confidence: ~p~n", [?MODULE, ConfLow]),
+        io:format("~s Higher Confidence: ~p~n", [?MODULE, ConfHigh]),
+        io:format("~s Error Window: ~p (~4.3f percent)~n", [?MODULE, ErrorWindow, ErrorPercent]),
+        io:format("~s Coeff. of Variation: ~p~n", [?MODULE, CoeffVar]),
+        io:format("~s Skewness: ~p~n", [?MODULE, Skew]),
         io:format("  Idle Power Log File: ~s~n", [IdlePowerLogFile]),
         io:format("  Benchmark Power Log File: ~s~n", [BenchmarkLogFile]).
 
@@ -40,50 +72,18 @@ log_idle_power() ->
     PowerMetricsCmd = "sudo powermetrics -s cpu_power -n 5 -i 1000 -a 0 --hide-cpu-duty-cycle --show-extra-power-info | grep -i \"Intel energy model derived CPU core power\" | while read line; do echo \"$(date '+%Y-%m-%d %H:%M:%S') $line\" >> " ++ IdleLogFile ++ "; done",
     % PowerMetricsCmd = "sudo powermetrics -s cpu_power -n 5 -i 1000 -a 0 --hide-cpu-duty-cycle --show-extra-power-info > " ++ IdleLogFile ++ " 2>&1", 
     os:cmd(PowerMetricsCmd),
-    timer:sleep(6000),  % Give time to capture idle power samples
+    timer:sleep(6000), 
     IdleLogFile.
-
-
-% start_power_metrics() ->
-%     BenchmarkLogFile = generate_log_filename("power_metrics"),
-%     % PowerMetricsCmd = "sudo powermetrics -s cpu_power -n 1 -i 1000 -a 0 --hide-cpu-duty-cycle --show-extra-power-info > " 
-%     %                   ++ BenchmarkLogFile ++ " 2>&1 & echo $!",
-%     % PowerMetricsCmd = "sudo powermetrics -s cpu_power -i 1000 -a 0 --hide-cpu-duty-cycle --show-extra-power-info | grep -i \"Intel energy model derived CPU core power\" | while read line; do echo \"$(date '+%Y-%m-%d %H:%M:%S') $line\" >> "
-%     %                     ++ BenchmarkLogFile ++ "; done 2>&1 & echo $!",
-%     PowerMetricsCmd = "sudo powermetrics -s cpu_power  -i 1000 -a 0 --hide-cpu-duty-cycle --show-extra-power-info | grep -i \"Intel energy model derived CPU core power\" | while read line; do echo \"$(date '+%Y-%m-%d %H:%M:%S') $line\" >> " ++ BenchmarkLogFile ++ "; done",
-%     os:cmd(PowerMetricsCmd),
-%     BenchmarkLogFile.
-    
-    
-    % PidStr = string:trim(os:cmd(PowerMetricsCmd)),  % Trim newline
-    % case catch list_to_integer(PidStr) of
-    %     Pid when is_integer(Pid) -> 
-    %         io:format("PowerMetrics started with PID: ~p~nLogging to file: ~s~n", [Pid, BenchmarkLogFile]),
-    %         {Pid, BenchmarkLogFile};
-    %     _ ->
-    %         io:format("Failed to start PowerMetrics. Output: ~s~n", [PidStr]),
-    %         exit(start_power_metrics_failed)
-    % end.
 
 start_power_metrics() ->
     BenchmarkLogFile = generate_log_filename("power_metrics"),
-    PowerMetricsCmd = "sudo powermetrics -s cpu_power -i 1000 -a 0 --hide-cpu-duty-cycle --show-extra-power-info | "
+    PowerMetricsCmd = "sudo powermetrics -s cpu_power -i 100 -a 0 --hide-cpu-duty-cycle --show-extra-power-info | "
                         "grep -i \"Intel energy model derived CPU core power\" | "
                         "while read line; do echo \"$(date '+%Y-%m-%d %H:%M:%S') $line\" >> " ++ BenchmarkLogFile ++ "; done &",
     os:cmd(PowerMetricsCmd),
-    timer:sleep(2000),  % Allow time for powermetrics to start
+    % timer:sleep(2000),  
     BenchmarkLogFile.
     
-
-
-
-
-% stop_power_metrics(Pid) ->
-%     % os:cmd("sudo pkill -2 powermetrics"),
-%     os:cmd("sudo kill -SIGTERM " ++ integer_to_list(Pid)),
-%     {_Date, Time} = calendar:universal_time(),
-%     FormattedTimestamp = io_lib:format("~p:~p:~p", tuple_to_list(Time)),
-%     io:format("PowerMetrics stopped at ~p.~n", [lists:flatten(FormattedTimestamp)]).
 
 stop_power_metrics() ->
     os:cmd("sudo pkill -2 powermetrics"),
@@ -94,7 +94,60 @@ stop_power_metrics() ->
 
 
 generate_log_filename(BaseName) ->
-    BaseName ++ ".log".
-    % {{Year, Month, Day}, {Hour, Min, Sec}} = calendar:universal_time(),
-    % lists:flatten(io_lib:format("~s_~p_~p_~p_~p:~p:~p.log", 
-    %             [BaseName, Year, Month, Day, Hour, Min, Sec])).
+    % BaseName ++ ".log".
+    {{Year, Month, Day}, {Hour, Min, Sec}} = calendar:universal_time(),
+    lists:flatten(io_lib:format("~s_~p_~p_~p_~p:~p:~p.log", 
+                [BaseName, Year, Month, Day, Hour, Min, Sec])).
+
+%% Calculate the median of a sorted list
+median(List) ->
+    Sorted = lists:sort(List),
+    Len = length(Sorted),
+    case Len rem 2 of
+        1 -> lists:nth((Len div 2) + 1, Sorted);
+        0 ->
+            A = lists:nth(Len div 2, Sorted),
+            B = lists:nth((Len div 2) + 1, Sorted),
+            (A + B) / 2
+    end.
+
+%% Calculate the arithmetic mean
+arithmetic_mean(List) ->
+    lists:sum(List) / length(List).
+
+%% Calculate the geometric mean
+geometric_mean(List) ->
+    Product = lists:foldl(fun(X, Acc) -> Acc * X end, 1, List),
+    math:pow(Product, 1 / length(List)).
+
+%% Calculate the harmonic mean
+harmonic_mean(List) ->
+    length(List) / lists:sum([1 / X || X <- List]).
+
+%% Calculate standard deviation
+standard_deviation(List) ->
+    Mean = arithmetic_mean(List),
+    Variance = lists:sum([math:pow(X - Mean, 2) || X <- List]) / length(List),
+    math:sqrt(Variance).
+
+%% Confidence interval calculations (assuming 95% confidence level)
+confidence_low(List) ->
+    Mean = arithmetic_mean(List),
+    StdDev = standard_deviation(List),
+    Mean - (1.96 * StdDev / math:sqrt(length(List))).
+
+confidence_high(List) ->
+    Mean = arithmetic_mean(List),
+    StdDev = standard_deviation(List),
+    Mean + (1.96 * StdDev / math:sqrt(length(List))).
+
+%% Calculate coefficient of variation (CV = StdDev / Mean)
+coefficient_of_variation(List) ->
+    standard_deviation(List) / arithmetic_mean(List).
+
+%% Calculate skewness
+skewness(List) ->
+    Mean = arithmetic_mean(List),
+    StdDev = standard_deviation(List),
+    N = length(List),
+    lists:sum([math:pow((X - Mean) / StdDev, 3) || X <- List]) / N.

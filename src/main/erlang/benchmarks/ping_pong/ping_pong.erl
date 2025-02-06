@@ -1,6 +1,6 @@
 -module(ping_pong).
 -export([run/0, ping/3, pong/0]).
--define(NUMMSG, 4000).
+-define(NUMMSG, 100000).
 
 run() ->
     PongPid = spawn(?MODULE, pong, []),
