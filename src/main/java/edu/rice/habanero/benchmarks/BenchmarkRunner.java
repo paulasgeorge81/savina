@@ -128,22 +128,30 @@ public class BenchmarkRunner {
 
 
     private static String logIdlePower() {
-        String logFile = generateLogFilename("idle_power");
-        executeCommand("sudo powermetrics -s cpu_power -n 5 -i 1000 -a 0 --hide-cpu-duty-cycle --show-extra-power-info > " + logFile + " &");
-        try { Thread.sleep(5000); } catch (InterruptedException e) { e.printStackTrace(); }
+        String IdleLogFile = generateLogFilename("idle_power");
+        String PowerMetricsCmd = "sudo powermetrics -s cpu_power -n 5 -i 1000 -a 0 --hide-cpu-duty-cycle --show-extra-power-info | grep -i \"Intel energy model derived CPU core power\" | while read line; do echo \"$(date '+%Y-%m-%d %H:%M:%S') $line\" >> " + IdleLogFile + "; done";
+        executeCommand(PowerMetricsCmd);
+        // executeCommand("sudo powermetrics -s cpu_power -n 5 -i 1000 -a 0 --hide-cpu-duty-cycle --show-extra-power-info > " + IdleLogFile + " &");
+        try { Thread.sleep(6000); } catch (InterruptedException e) { e.printStackTrace(); }
         stopPowerMetrics();
-        return logFile;
+        return IdleLogFile;
     }
+
+    
+    
 
 
     private static String startPowerMetrics() {
-        String logFile = generateLogFilename("power_metrics");
-        String PowerMetricsCmd = "sudo powermetrics -s cpu_power -i 1000 -a 0 --hide-cpu-duty-cycle --show-extra-power-info > " 
-        + logFile + " 2>&1 & echo $!";
+        String BenchmarkLogFile = generateLogFilename("power_metrics");
+        // String PowerMetricsCmd = "sudo powermetrics -s cpu_power -i 1000 -a 0 --hide-cpu-duty-cycle --show-extra-power-info > " 
+        // + logFile + " 2>&1 & echo $!";
+        String PowerMetricsCmd = "sudo powermetrics -s cpu_power -i 100 -a 0 --hide-cpu-duty-cycle --show-extra-power-info | "+
+        "grep -i \"Intel energy model derived CPU core power\" | "+
+        "while read line; do echo \"$(date '+%Y-%m-%d %H:%M:%S') $line\" >> " + BenchmarkLogFile + "; done &";
         executeCommand(PowerMetricsCmd);
-        try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
+        // try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
         // executeCommand("sudo powermetrics -s cpu_power -i 1000 -a 0 --hide-cpu-duty-cycle --show-extra-power-info > " + logFile + " 2>&1 & echo $!");
-        return logFile;
+        return BenchmarkLogFile;
     }
 
    
