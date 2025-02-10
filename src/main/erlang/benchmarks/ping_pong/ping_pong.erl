@@ -1,5 +1,5 @@
 -module(ping_pong).
--export([run/0, ping/3, pong/0]).
+-export([run/0, ping/3, pong/0,print_config/0]).
 -define(NUMMSG, 100000).
 
 run() ->
@@ -30,3 +30,6 @@ pong() ->
             pong();
         stop -> ok
     end.
+
+print_config() ->
+    io:format("    N (num pings) = ~p~n",[?NUMMSG]).

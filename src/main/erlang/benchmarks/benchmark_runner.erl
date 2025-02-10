@@ -12,16 +12,44 @@
 ]).
 
 run(BenchmarkModule, NumIterations) ->
+        % Get system information
+        ErlangVersion = erlang:system_info(otp_release),
+        EmulatorVersion = erlang:system_info(version),
+        OS_Version = os:cmd("sw_vers -productVersion"),
+        OS_Arch = os:cmd("uname -m"),
+
+        % Print runtime and system information
+        io:format("Runtime: Erlang/OTP:~s~n", [ErlangVersion]),
+        io:format("Erlang Emulator Version: ~s~n", [EmulatorVersion]),
+        io:format("Benchmark: ~p~n", [BenchmarkModule]),
+        BenchmarkModule:print_config(),
+        io:format("~n"),
+        
+        io:format("      O/S Version = ~s", [OS_Version]),
+        io:format("         O/S Name = Mac OS X~n"),
+        io:format("         O/S Arch = ~s", [OS_Arch]),
+
         % Log idle power consumption before benchmarking
         IdlePowerLogFile = log_idle_power(),
+        io:format("Idle Power Log File: ~s~n", [IdlePowerLogFile]),
 
         % Start power metrics collection
         BenchmarkLogFile = start_power_metrics(),
-    
+        io:format("Benchmark Power Log File: ~s~n", [BenchmarkLogFile]),
         % Run the benchmark while triggering power samples
-        ExecTimes = [measure_time(fun() -> 
-            BenchmarkModule:run()
-        end) || _ <- lists:seq(1, NumIterations)],
+        % ExecTimes = [measure_time(fun() -> 
+        %     BenchmarkModule:run()
+        % end) || _ <- lists:seq(1, NumIterations)],
+        
+        io:format("Execution - Iterations:~n"),
+        ExecTimes = [
+            begin
+                {ExecTime, _} = timer:tc(fun() -> BenchmarkModule:run() end),
+                ExecTimeMs = ExecTime / 1000.0,  % Convert microseconds to milliseconds
+                io:format("~p          Iteration-~p:   ~.3f ms~n", [BenchmarkModule, I, ExecTimeMs]),
+                ExecTimeMs
+            end || I <- lists:seq(1, NumIterations)
+        ],
     
         % Stop power metrics collection
         stop_power_metrics(),
@@ -58,13 +86,11 @@ run(BenchmarkModule, NumIterations) ->
         io:format("~s Higher Confidence: ~p~n", [?MODULE, ConfHigh]),
         io:format("~s Error Window: ~p (~4.3f percent)~n", [?MODULE, ErrorWindow, ErrorPercent]),
         io:format("~s Coeff. of Variation: ~p~n", [?MODULE, CoeffVar]),
-        io:format("~s Skewness: ~p~n", [?MODULE, Skew]),
-        io:format("  Idle Power Log File: ~s~n", [IdlePowerLogFile]),
-        io:format("  Benchmark Power Log File: ~s~n", [BenchmarkLogFile]).
+        io:format("~s Skewness: ~p~n", [?MODULE, Skew]).
 
-measure_time(Fun) ->
-    {Time, _Result} = timer:tc(Fun),
-    Time.
+% measure_time(Fun) ->
+%     {Time, _Result} = timer:tc(Fun),
+%     Time.
 
 
 log_idle_power() ->
@@ -89,7 +115,8 @@ stop_power_metrics() ->
     os:cmd("sudo pkill -2 powermetrics"),
     {_Date, Time} = calendar:universal_time(),
     FormattedTimestamp = io_lib:format("~p:~p:~p", tuple_to_list(Time)),
-    io:format("PowerMetrics stopped at ~p.~n", [lists:flatten(FormattedTimestamp)]).
+    io:format("PowerMetrics stopped at ~p.~n", [lists:flatten(FormattedTimestamp)]),
+    io:format("~n").
 
 
 
