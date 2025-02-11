@@ -18,10 +18,6 @@ object PingPongAkkaActorBenchmark {
     BenchmarkRunner.runBenchmark(args, new PingPongAkkaActorBenchmark)
   }
 
-  /**
-   * Start the powermetrics process and log the output.
-   * @return The process instance for later termination.
-   */
 
 
   private final class PingPongAkkaActorBenchmark extends Benchmark {
