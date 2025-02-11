@@ -93,19 +93,55 @@ run(BenchmarkModule, NumIterations) ->
 %     Time.
 
 
+% log_idle_power() ->
+%     IdleLogFile = generate_log_filename("idle_power"),
+%     PowerMetricsCmd = "sudo powermetrics -s cpu_power -n 5 -i 1000 -a 0 --hide-cpu-duty-cycle --show-extra-power-info | grep -i \"Intel energy model derived CPU core power\" | while read line; do echo \"$(date '+%Y-%m-%d %H:%M:%S') $line\" >> " ++ IdleLogFile ++ "; done",
+%     % PowerMetricsCmd = "sudo powermetrics -s cpu_power -n 5 -i 1000 -a 0 --hide-cpu-duty-cycle --show-extra-power-info > " ++ IdleLogFile ++ " 2>&1", 
+%     os:cmd(PowerMetricsCmd),
+%     timer:sleep(6000), 
+%     IdleLogFile.
+
+    
+
 log_idle_power() ->
     IdleLogFile = generate_log_filename("idle_power"),
-    PowerMetricsCmd = "sudo powermetrics -s cpu_power -n 5 -i 1000 -a 0 --hide-cpu-duty-cycle --show-extra-power-info | grep -i \"Intel energy model derived CPU core power\" | while read line; do echo \"$(date '+%Y-%m-%d %H:%M:%S') $line\" >> " ++ IdleLogFile ++ "; done",
-    % PowerMetricsCmd = "sudo powermetrics -s cpu_power -n 5 -i 1000 -a 0 --hide-cpu-duty-cycle --show-extra-power-info > " ++ IdleLogFile ++ " 2>&1", 
+    io:format("Taking idle samples and writing to ~p~n", [IdleLogFile]),
+    %PowerMetricsCmd = "sudo powermetrics -s cpu_power -n 5 -i 1000 -a 0 --hide-cpu-duty-cycle --show-extra-power-info | grep -i \"Intel energy model derived CPU core power\" | while read line; do echo \"$(date '+%Y-%m-%d %H:%M:%S') $line\" >> " ++ IdleLogFile ++ "; done",
+    %PowerMetricsCmd = "sudo powermetrics -s cpu_power -n 5 -i 1000 -a 0 --hide-cpu-duty-cycle --show-extra-power-info > " ++ IdleLogFile ++ " 2>&1", 
+
+    PowerMetricsCmd = 
+        "sudo powermetrics --samplers cpu_power,thermal,smc -n 5 -i 1000 -a 0 "
+        "--hide-cpu-duty-cycle --show-extra-power-info | "
+        "awk 'BEGIN {power=\"N/A\"; util=\"N/A\"; temp=\"N/A\"; timestamp=\"N/A\"; pressure=\"N/A\"} "
+        "/\\*\\*\\* Sampled system activity/ {timestamp=$6 \" \" $7 \" \" $8 \" \" $9} "
+        "/Intel energy model derived CPU core power/ {power=$NF} "
+        "/Cores Active:/ {util=$NF} "
+        "/Current pressure level/ {pressure=$NF} "
+        "/CPU die temperature/ {temp=$(NF-1); "
+        "print timestamp, power, util, temp, pressure >> \"" ++ IdleLogFile ++ "\"; "
+        "power=\"N/A\"; util=\"N/A\"; temp=\"N/A\"; timestamp=\"N/A\"; pressure=\"N/A\"}'",
+    % io:format("Executing command: ~p~n", [PowerMetricsCmd]),
     os:cmd(PowerMetricsCmd),
-    timer:sleep(6000), 
+    timer:sleep(6000),
     IdleLogFile.
 
 start_power_metrics() ->
     BenchmarkLogFile = generate_log_filename("power_metrics"),
-    PowerMetricsCmd = "sudo powermetrics -s cpu_power -i 100 -a 0 --hide-cpu-duty-cycle --show-extra-power-info | "
-                        "grep -i \"Intel energy model derived CPU core power\" | "
-                        "while read line; do echo \"$(date '+%Y-%m-%d %H:%M:%S') $line\" >> " ++ BenchmarkLogFile ++ "; done &",
+    % PowerMetricsCmd = "sudo powermetrics -s cpu_power -i 100 -a 0 --hide-cpu-duty-cycle --show-extra-power-info | "
+    %                     "grep -i \"Intel energy model derived CPU core power\" | "
+    %                     "while read line; do echo \"$(date '+%Y-%m-%d %H:%M:%S') $line\" >> " ++ BenchmarkLogFile ++ "; done &",
+    PowerMetricsCmd = 
+    "sudo powermetrics --samplers cpu_power,thermal,smc  -i 100 -a 0 "
+    "--hide-cpu-duty-cycle --show-extra-power-info | "
+    "awk 'BEGIN {power=\"N/A\"; util=\"N/A\"; temp=\"N/A\"; timestamp=\"N/A\"; pressure=\"N/A\"} "
+    "/\\*\\*\\* Sampled system activity/ {timestamp=$6 \" \" $7 \" \" $8 \" \" $9} "
+    "/Intel energy model derived CPU core power/ {power=$NF} "
+    "/Cores Active:/ {util=$NF} "
+    "/Current pressure level/ {pressure=$NF} "
+    "/CPU die temperature/ {temp=$(NF-1); "
+    "print timestamp, power, util, temp, pressure >> \"" ++ BenchmarkLogFile ++ "\"; "
+    "power=\"N/A\"; util=\"N/A\"; temp=\"N/A\"; timestamp=\"N/A\"; pressure=\"N/A\"}' &",
+                
     os:cmd(PowerMetricsCmd),
     % timer:sleep(2000),  
     BenchmarkLogFile.
