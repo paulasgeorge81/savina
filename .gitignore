@@ -10,4 +10,5 @@ release.properties
 .vscode/
 *.beam
 *.log
-*.csv
+idle_power_*.csv
+power_metrics_*.csv

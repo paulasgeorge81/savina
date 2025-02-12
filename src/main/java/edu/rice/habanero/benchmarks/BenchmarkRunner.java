@@ -62,11 +62,11 @@ public class BenchmarkRunner {
         System.out.printf(argOutputFormat, "O/S Name", System.getProperty("os.name"));
         System.out.printf(argOutputFormat, "O/S Arch", System.getProperty("os.arch"));
 
-        String idlePowerLog = logIdlePower();
-        System.out.println("Idle Power Log File: " + idlePowerLog);
+        //Log idle power consumption before benchmarking
+        logIdlePower();
 
-        String benchmarkPowerLog = startPowerMetrics();
-        System.out.println("Benchmark Power Log File: " + benchmarkPowerLog);
+        //Start power metrics collection
+        startPowerMetrics();
 
         final List<Double> rawExecTimes = new ArrayList<>(iterations);
 
@@ -129,7 +129,20 @@ public class BenchmarkRunner {
 
     private static String logIdlePower() {
         String IdleLogFile = generateLogFilename("idle_power");
-        String PowerMetricsCmd = "sudo powermetrics -s cpu_power -n 5 -i 1000 -a 0 --hide-cpu-duty-cycle --show-extra-power-info | grep -i \"Intel energy model derived CPU core power\" | while read line; do echo \"$(date '+%Y-%m-%d %H:%M:%S') $line\" >> " + IdleLogFile + "; done";
+        System.out.println("Idle sampling started, writing to " + IdleLogFile);
+        // String PowerMetricsCmd = "sudo powermetrics -s cpu_power -n 5 -i 1000 -a 0 --hide-cpu-duty-cycle --show-extra-power-info | grep -i \"Intel energy model derived CPU core power\" | while read line; do echo \"$(date '+%Y-%m-%d %H:%M:%S') $line\" >> " + IdleLogFile + "; done";
+        String PowerMetricsCmd = 
+        "sudo powermetrics --samplers cpu_power,thermal,smc -n 5 -i 1000 -a 0 "
+        + "--hide-cpu-duty-cycle --show-extra-power-info | "
+        + "awk 'BEGIN {power=\"N/A\"; util=\"N/A\"; temp=\"N/A\"; timestamp=\"N/A\"; pressure=\"N/A\"; logfile=\"" + IdleLogFile + "\"; "
+        + "if (system(\"test -s \" logfile) != 0) print \"Timestamp,CPU Core Power(W),Cores Active,CPU Temp(C),Pressure Level\" > logfile} "
+        + "/\\*\\*\\* Sampled system activity/ {timestamp=$6 \" \" $7 \" \" $8 \" \" $9} "
+        + "/Intel energy model derived CPU core power/ {power=$NF} "
+        + "/Cores Active:/ {util=$NF} "
+        + "/Current pressure level/ {pressure=$NF} "
+        + "/CPU die temperature/ {temp=$(NF-1); "
+        + "print timestamp \",\" power \",\" util \",\" temp \",\" pressure >> logfile; "
+        + "power=\"N/A\"; util=\"N/A\"; temp=\"N/A\"; timestamp=\"N/A\"; pressure=\"N/A\"}'";
         executeCommand(PowerMetricsCmd);
         // executeCommand("sudo powermetrics -s cpu_power -n 5 -i 1000 -a 0 --hide-cpu-duty-cycle --show-extra-power-info > " + IdleLogFile + " &");
         try { Thread.sleep(6000); } catch (InterruptedException e) { e.printStackTrace(); }
@@ -143,11 +156,24 @@ public class BenchmarkRunner {
 
     private static String startPowerMetrics() {
         String BenchmarkLogFile = generateLogFilename("power_metrics");
+        System.out.println("Benchmark sampling started, writing to " + BenchmarkLogFile);
         // String PowerMetricsCmd = "sudo powermetrics -s cpu_power -i 1000 -a 0 --hide-cpu-duty-cycle --show-extra-power-info > " 
         // + logFile + " 2>&1 & echo $!";
-        String PowerMetricsCmd = "sudo powermetrics -s cpu_power -i 100 -a 0 --hide-cpu-duty-cycle --show-extra-power-info | "+
-        "grep -i \"Intel energy model derived CPU core power\" | "+
-        "while read line; do echo \"$(date '+%Y-%m-%d %H:%M:%S') $line\" >> " + BenchmarkLogFile + "; done &";
+        // String PowerMetricsCmd = "sudo powermetrics -s cpu_power -i 100 -a 0 --hide-cpu-duty-cycle --show-extra-power-info | "+
+        // "grep -i \"Intel energy model derived CPU core power\" | "+
+        // "while read line; do echo \"$(date '+%Y-%m-%d %H:%M:%S') $line\" >> " + BenchmarkLogFile + "; done &";
+        String PowerMetricsCmd = 
+        "sudo powermetrics --samplers cpu_power,thermal,smc -i 100 -a 0 "
+        + "--hide-cpu-duty-cycle --show-extra-power-info | "
+        + "awk 'BEGIN {power=\"N/A\"; util=\"N/A\"; temp=\"N/A\"; timestamp=\"N/A\"; pressure=\"N/A\"; logfile=\"" + BenchmarkLogFile + "\"; "
+        + "if (system(\"test -s \" logfile) != 0) print \"Timestamp,CPU Core Power(W),Cores Active,CPU Temp(C),Pressure Level\" > logfile} "
+        + "/\\*\\*\\* Sampled system activity/ {timestamp=$6 \" \" $7 \" \" $8 \" \" $9} "
+        + "/Intel energy model derived CPU core power/ {power=$NF} "
+        + "/Cores Active:/ {util=$NF} "
+        + "/Current pressure level/ {pressure=$NF} "
+        + "/CPU die temperature/ {temp=$(NF-1); "
+        + "print timestamp \",\" power \",\" util \",\" temp \",\" pressure >> logfile; "
+        + "power=\"N/A\"; util=\"N/A\"; temp=\"N/A\"; timestamp=\"N/A\"; pressure=\"N/A\"}' &";
         executeCommand(PowerMetricsCmd);
         // try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
         // executeCommand("sudo powermetrics -s cpu_power -i 1000 -a 0 --hide-cpu-duty-cycle --show-extra-power-info > " + logFile + " 2>&1 & echo $!");
@@ -157,6 +183,14 @@ public class BenchmarkRunner {
    
     private static void stopPowerMetrics() {
         executeCommand("sudo pkill -2 powermetrics");
+
+        // Get the current time and format it without the year, month, and date
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+        String formattedTime = sdf.format(new Date());
+
+        // Print the stopping time
+        System.out.println("PowerMetrics stopped at " + formattedTime + ".");
+        System.out.println();
     }
 
      private static void executeCommand(String command) {
@@ -170,7 +204,7 @@ public class BenchmarkRunner {
 
     private static String generateLogFilename(String baseName) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd_HH:mm:ss");
-        return baseName + "_" + sdf.format(new Date()) + ".log";
+        return baseName + "_" + sdf.format(new Date()) + ".csv";
     }
 
     public static List<Double> sanitize(final List<Double> rawList, final double tolerance) {
