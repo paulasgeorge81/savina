@@ -36,10 +36,6 @@ run(BenchmarkModule, NumIterations) ->
         % Start power metrics collection
         BenchmarkLogFile = start_power_metrics(),
         io:format("Benchmark Power Log File: ~s~n", [BenchmarkLogFile]),
-        % Run the benchmark while triggering power samples
-        % ExecTimes = [measure_time(fun() -> 
-        %     BenchmarkModule:run()
-        % end) || _ <- lists:seq(1, NumIterations)],
         
         io:format("Execution - Iterations:~n"),
         ExecTimes = [
@@ -87,38 +83,24 @@ run(BenchmarkModule, NumIterations) ->
         io:format("~s Error Window: ~p (~4.3f percent)~n", [BenchmarkModule, ErrorWindow, ErrorPercent]),
         io:format("~s Coeff. of Variation: ~p~n", [BenchmarkModule, CoeffVar]),
         io:format("~s Skewness: ~p~n", [BenchmarkModule, Skew]).
-
-% measure_time(Fun) ->
-%     {Time, _Result} = timer:tc(Fun),
-%     Time.
-
-
-% log_idle_power() ->
-%     IdleLogFile = generate_log_filename("idle_power"),
-%     PowerMetricsCmd = "sudo powermetrics -s cpu_power -n 5 -i 1000 -a 0 --hide-cpu-duty-cycle --show-extra-power-info | grep -i \"Intel energy model derived CPU core power\" | while read line; do echo \"$(date '+%Y-%m-%d %H:%M:%S') $line\" >> " ++ IdleLogFile ++ "; done",
-%     % PowerMetricsCmd = "sudo powermetrics -s cpu_power -n 5 -i 1000 -a 0 --hide-cpu-duty-cycle --show-extra-power-info > " ++ IdleLogFile ++ " 2>&1", 
-%     os:cmd(PowerMetricsCmd),
-%     timer:sleep(6000), 
-%     IdleLogFile.
-
-    
+ 
 
 log_idle_power() ->
     IdleLogFile = generate_log_filename("idle_power"),
     io:format("Taking idle samples and writing to ~p~n", [IdleLogFile]),
     %PowerMetricsCmd = "sudo powermetrics -s cpu_power -n 5 -i 1000 -a 0 --hide-cpu-duty-cycle --show-extra-power-info | grep -i \"Intel energy model derived CPU core power\" | while read line; do echo \"$(date '+%Y-%m-%d %H:%M:%S') $line\" >> " ++ IdleLogFile ++ "; done",
     %PowerMetricsCmd = "sudo powermetrics -s cpu_power -n 5 -i 1000 -a 0 --hide-cpu-duty-cycle --show-extra-power-info > " ++ IdleLogFile ++ " 2>&1", 
-
     PowerMetricsCmd = 
         "sudo powermetrics --samplers cpu_power,thermal,smc -n 5 -i 1000 -a 0 "
         "--hide-cpu-duty-cycle --show-extra-power-info | "
-        "awk 'BEGIN {power=\"N/A\"; util=\"N/A\"; temp=\"N/A\"; timestamp=\"N/A\"; pressure=\"N/A\"} "
+        "awk 'BEGIN {power=\"N/A\"; util=\"N/A\"; temp=\"N/A\"; timestamp=\"N/A\"; pressure=\"N/A\"; logfile=\"" ++ IdleLogFile ++ "\"; "
+        "if (system(\"test -s \" logfile) != 0) print \"Timestamp,CPU Core Power(W),Cores Active,CPU Temp(C),Pressure Level\" > logfile} "
         "/\\*\\*\\* Sampled system activity/ {timestamp=$6 \" \" $7 \" \" $8 \" \" $9} "
         "/Intel energy model derived CPU core power/ {power=$NF} "
         "/Cores Active:/ {util=$NF} "
         "/Current pressure level/ {pressure=$NF} "
         "/CPU die temperature/ {temp=$(NF-1); "
-        "print timestamp, power, util, temp, pressure >> \"" ++ IdleLogFile ++ "\"; "
+        "print timestamp \",\" power \",\" util \",\" temp \",\" pressure >> logfile; "
         "power=\"N/A\"; util=\"N/A\"; temp=\"N/A\"; timestamp=\"N/A\"; pressure=\"N/A\"}'",
     % io:format("Executing command: ~p~n", [PowerMetricsCmd]),
     os:cmd(PowerMetricsCmd),
@@ -130,17 +112,30 @@ start_power_metrics() ->
     % PowerMetricsCmd = "sudo powermetrics -s cpu_power -i 100 -a 0 --hide-cpu-duty-cycle --show-extra-power-info | "
     %                     "grep -i \"Intel energy model derived CPU core power\" | "
     %                     "while read line; do echo \"$(date '+%Y-%m-%d %H:%M:%S') $line\" >> " ++ BenchmarkLogFile ++ "; done &",
+    % PowerMetricsCmd = 
+    % "sudo powermetrics --samplers cpu_power,thermal,smc  -i 100 -a 0 "
+    % "--hide-cpu-duty-cycle --show-extra-power-info | "
+    % "awk 'BEGIN {power=\"N/A\"; util=\"N/A\"; temp=\"N/A\"; timestamp=\"N/A\"; pressure=\"N/A\"} "
+    % "/\\*\\*\\* Sampled system activity/ {timestamp=$6 \" \" $7 \" \" $8 \" \" $9} "
+    % "/Intel energy model derived CPU core power/ {power=$NF} "
+    % "/Cores Active:/ {util=$NF} "
+    % "/Current pressure level/ {pressure=$NF} "
+    % "/CPU die temperature/ {temp=$(NF-1); "
+    % "print timestamp, power, util, temp, pressure >> \"" ++ BenchmarkLogFile ++ "\"; "
+    % "power=\"N/A\"; util=\"N/A\"; temp=\"N/A\"; timestamp=\"N/A\"; pressure=\"N/A\"}' &",
+
     PowerMetricsCmd = 
-    "sudo powermetrics --samplers cpu_power,thermal,smc  -i 100 -a 0 "
-    "--hide-cpu-duty-cycle --show-extra-power-info | "
-    "awk 'BEGIN {power=\"N/A\"; util=\"N/A\"; temp=\"N/A\"; timestamp=\"N/A\"; pressure=\"N/A\"} "
-    "/\\*\\*\\* Sampled system activity/ {timestamp=$6 \" \" $7 \" \" $8 \" \" $9} "
-    "/Intel energy model derived CPU core power/ {power=$NF} "
-    "/Cores Active:/ {util=$NF} "
-    "/Current pressure level/ {pressure=$NF} "
-    "/CPU die temperature/ {temp=$(NF-1); "
-    "print timestamp, power, util, temp, pressure >> \"" ++ BenchmarkLogFile ++ "\"; "
-    "power=\"N/A\"; util=\"N/A\"; temp=\"N/A\"; timestamp=\"N/A\"; pressure=\"N/A\"}' &",
+        "sudo powermetrics --samplers cpu_power,thermal,smc -i 100 -a 0 "
+        "--hide-cpu-duty-cycle --show-extra-power-info | "
+        "awk 'BEGIN {power=\"N/A\"; util=\"N/A\"; temp=\"N/A\"; timestamp=\"N/A\"; pressure=\"N/A\"; logfile=\"" ++ BenchmarkLogFile ++ "\"; "
+        "if (system(\"test -s \" logfile) != 0) print \"Timestamp,CPU Core Power(W),Cores Active,CPU Temp(C),Pressure Level\" > logfile} "
+        "/\\*\\*\\* Sampled system activity/ {timestamp=$6 \" \" $7 \" \" $8 \" \" $9} "
+        "/Intel energy model derived CPU core power/ {power=$NF} "
+        "/Cores Active:/ {util=$NF} "
+        "/Current pressure level/ {pressure=$NF} "
+        "/CPU die temperature/ {temp=$(NF-1); "
+        "print timestamp \",\" power \",\" util \",\" temp \",\" pressure >> logfile; "
+        "power=\"N/A\"; util=\"N/A\"; temp=\"N/A\"; timestamp=\"N/A\"; pressure=\"N/A\"}' &",
                 
     os:cmd(PowerMetricsCmd),
     % timer:sleep(2000),  
@@ -159,7 +154,7 @@ stop_power_metrics() ->
 generate_log_filename(BaseName) ->
     % BaseName ++ ".log".
     {{Year, Month, Day}, {Hour, Min, Sec}} = calendar:universal_time(),
-    lists:flatten(io_lib:format("~s_~p_~p_~p_~p:~p:~p.log", 
+    lists:flatten(io_lib:format("~s_~p_~p_~p_~p:~p:~p.csv", 
                 [BaseName, Year, Month, Day, Hour, Min, Sec])).
 
 %% Calculate the median of a sorted list

@@ -1,0 +1,6 @@
+Timestamp,CPU Core Power(W),Cores Active,CPU Temp(C),Pressure Level
+Feb 12 09:36:40 2025,8.11W,1.13,68.10,Nominal
+Feb 12 09:36:41 2025,5.07W,1.17,68.04,Nominal
+Feb 12 09:36:42 2025,3.44W,0.78,68.02,Nominal
+Feb 12 09:36:43 2025,5.09W,0.94,67.97,Nominal
+Feb 12 09:36:44 2025,0.477W,0.30,67.87,Nominal
