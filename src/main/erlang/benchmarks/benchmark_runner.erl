@@ -36,7 +36,7 @@ run(BenchmarkModule, NumIterations) ->
         start_power_metrics(),
         
         io:format("Execution - Iterations:~n"),
-        ExecTimes = [
+        RawExecTimes = [
             begin
                 {ExecTime, _} = timer:tc(fun() -> BenchmarkModule:run() end),
                 ExecTimeMs = ExecTime / 1000.0,  % Convert microseconds to milliseconds
@@ -47,28 +47,26 @@ run(BenchmarkModule, NumIterations) ->
     
         % Stop power metrics collection
         stop_power_metrics(),
-    
         % Compute benchmark statistics
-        RawExecTimes = ExecTimes,
-        FilteredExecTimes = lists:sort(ExecTimes),
-        BestTime = hd(FilteredExecTimes),
-        WorstTime = lists:last(FilteredExecTimes),
-        MedianTime = median(FilteredExecTimes),
-        ArithMean = arithmetic_mean(FilteredExecTimes),
-        GeoMean = geometric_mean(FilteredExecTimes),
-        HarmMean = harmonic_mean(FilteredExecTimes),
-        StdDev = standard_deviation(FilteredExecTimes),
-        ConfLow = confidence_low(FilteredExecTimes),
-        ConfHigh = confidence_high(FilteredExecTimes),
+        ExecTimes = sanitize(RawExecTimes, 0.20),
+        BestTime = hd(ExecTimes),
+        WorstTime = lists:last(ExecTimes),
+        MedianTime = median(ExecTimes),
+        ArithMean = arithmetic_mean(ExecTimes),
+        GeoMean = geometric_mean(ExecTimes),
+        HarmMean = harmonic_mean(ExecTimes),
+        StdDev = standard_deviation(ExecTimes),
+        ConfLow = confidence_low(ExecTimes),
+        ConfHigh = confidence_high(ExecTimes),
         ErrorWindow = ConfHigh - ArithMean,
         ErrorPercent = 100 * ErrorWindow / ArithMean,
-        CoeffVar = coefficient_of_variation(FilteredExecTimes),
-        Skew = skewness(FilteredExecTimes),
+        CoeffVar = coefficient_of_variation(ExecTimes),
+        Skew = skewness(ExecTimes),
         
         io:format("Execution - Summary: ~n"),
-        io:format("Benchmark Results (~p iterations):~n", [NumIterations]),
+        % io:format("Benchmark Results (~p iterations):~n", [NumIterations]),
         io:format("Total executions: ~p~n", [length(RawExecTimes)]),
-        io:format("Filtered executions: ~p~n", [length(FilteredExecTimes)]),
+        io:format("Filtered executions: ~p~n", [length(ExecTimes)]),
         io:format("~s Best Time: ~p~n", [BenchmarkModule, BestTime]),
         io:format("~s Worst Time: ~p~n", [BenchmarkModule, WorstTime]),
         io:format("~s Median: ~p~n", [BenchmarkModule, MedianTime]),
@@ -81,7 +79,6 @@ run(BenchmarkModule, NumIterations) ->
         io:format("~s Error Window: ~p (~4.3f percent)~n", [BenchmarkModule, ErrorWindow, ErrorPercent]),
         io:format("~s Coeff. of Variation: ~p~n", [BenchmarkModule, CoeffVar]),
         io:format("~s Skewness: ~p~n", [BenchmarkModule, Skew]).
- 
 
 log_idle_power() ->
     IdleLogFile = generate_log_filename("idle_power"),
@@ -146,6 +143,22 @@ generate_log_filename(BaseName) ->
     lists:flatten(io_lib:format("~s_~p_~p_~p_~p:~p:~p.csv", 
                 [BaseName, Year, Month, Day, Hour, Min, Sec])).
 
+%% Sanitize function (removes 5% outliers from both ends)
+sanitize(RawList, Tolerance) when is_list(RawList), RawList =/= [] ->
+    Sorted = lists:sort(RawList),
+    RawListSize = length(Sorted),
+    Median = lists:nth(RawListSize div 2 + 1, Sorted),
+    AllowedMin = (1 - Tolerance) * Median,
+    AllowedMax = (1 + Tolerance) * Median,
+    [X || X <- Sorted, X >= AllowedMin, X =< AllowedMax];
+
+sanitize([], _Tolerance) ->
+    [].
+
+%% Calculate the arithmetic mean
+arithmetic_mean(List) ->
+    lists:sum(List) / length(List).
+
 %% Calculate the median of a sorted list
 median(List) ->
     Sorted = lists:sort(List),
@@ -158,14 +171,10 @@ median(List) ->
             (A + B) / 2
     end.
 
-%% Calculate the arithmetic mean
-arithmetic_mean(List) ->
-    lists:sum(List) / length(List).
-
 %% Calculate the geometric mean
-geometric_mean(List) ->
-    Product = lists:foldl(fun(X, Acc) -> Acc * X end, 1, List),
-    math:pow(Product, 1 / length(List)).
+geometric_mean(List) when is_list(List), length(List) > 0 ->
+    LogSum = lists:sum([math:log10(X) || X <- List]),
+    math:pow(10, LogSum / length(List)).
 
 %% Calculate the harmonic mean
 harmonic_mean(List) ->
@@ -176,6 +185,10 @@ standard_deviation(List) ->
     Mean = arithmetic_mean(List),
     Variance = lists:sum([math:pow(X - Mean, 2) || X <- List]) / length(List),
     math:sqrt(Variance).
+
+%% Calculate coefficient of variation (CV = StdDev / Mean)
+coefficient_of_variation(List) ->
+    standard_deviation(List) / arithmetic_mean(List).
 
 %% Confidence interval calculations (assuming 95% confidence level)
 confidence_low(List) ->
@@ -188,13 +201,12 @@ confidence_high(List) ->
     StdDev = standard_deviation(List),
     Mean + (1.96 * StdDev / math:sqrt(length(List))).
 
-%% Calculate coefficient of variation (CV = StdDev / Mean)
-coefficient_of_variation(List) ->
-    standard_deviation(List) / arithmetic_mean(List).
-
 %% Calculate skewness
 skewness(List) ->
     Mean = arithmetic_mean(List),
     StdDev = standard_deviation(List),
     N = length(List),
-    lists:sum([math:pow((X - Mean) / StdDev, 3) || X <- List]) / N.
+    if
+        N > 1 -> lists:sum([math:pow(X - Mean, 3) || X <- List]) / ((N - 1) * math:pow(StdDev, 3));
+        true -> 0.0
+    end.
