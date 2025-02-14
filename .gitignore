@@ -12,3 +12,4 @@ release.properties
 *.log
 idle_power_*.csv
 power_metrics_*.csv
+.DS_Store
