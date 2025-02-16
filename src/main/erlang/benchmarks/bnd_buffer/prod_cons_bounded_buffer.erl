@@ -72,33 +72,6 @@ consumer(ManagerPid) ->
         stop -> ok
     end.
 
-
-% process_item(CurTerm, Cost) ->
-%     RandState = pseudo_random:new(Cost),
-%     {RandDouble, _NewState} = pseudo_random:next_double(RandState),
-    
-%     Res = if
-%         Cost > 0 ->
-%             lists:foldl(
-%                 fun(_, Acc) ->
-%                     lists:foldl(
-%                         fun(_, InnerAcc) ->
-%                             {RandVal, _} = pseudo_random:next_double(RandState),
-%                             io:format("Next Double: ~p", [RandVal]),
-%                             InnerAcc + math:log(abs(RandVal) + 0.01)
-%                         end,
-%                         Acc,
-%                         lists:seq(1, 100)
-%                     )
-%                 end,
-%                 CurTerm,
-%                 lists:seq(1, Cost)
-%             );
-%         true ->
-%             CurTerm + math:log(abs(RandDouble) + 0.01)
-%     end,
-%     Res.
-
 process_item(CurTerm, Cost) ->
     RandState = pseudo_random:new(Cost),
     outer_loop(CurTerm, Cost, RandState, 0).

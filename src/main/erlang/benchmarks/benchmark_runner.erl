@@ -47,6 +47,7 @@ run(BenchmarkModule, NumIterations) ->
     
         % Stop power metrics collection
         stop_power_metrics(),
+
         % Compute benchmark statistics
         ExecTimes = sanitize(RawExecTimes, 0.20),
         BestTime = hd(ExecTimes),
@@ -82,23 +83,19 @@ run(BenchmarkModule, NumIterations) ->
 log_idle_power() ->
     IdleLogFile = generate_log_filename("idle_power"),
     io:format("Idle sampling started, writing to ~p~n", [IdleLogFile]),
-    %PowerMetricsCmd = "sudo powermetrics -s cpu_power -n 5 -i 1000 -a 0 --hide-cpu-duty-cycle --show-extra-power-info | grep -i \"Intel energy model derived CPU core power\" | while read line; do echo \"$(date '+%Y-%m-%d %H:%M:%S') $line\" >> " ++ IdleLogFile ++ "; done",
-    %PowerMetricsCmd = "sudo powermetrics -s cpu_power -n 5 -i 1000 -a 0 --hide-cpu-duty-cycle --show-extra-power-info > " ++ IdleLogFile ++ " 2>&1", 
     PowerMetricsCmd = 
         "sudo powermetrics --samplers cpu_power,thermal,smc -n 5 -i 1000 -a 0 "
         "--hide-cpu-duty-cycle --show-extra-power-info | "
         "awk 'BEGIN {power=\"N/A\"; util=\"N/A\"; temp=\"N/A\"; timestamp=\"N/A\"; pressure=\"N/A\"; logfile=\"" ++ IdleLogFile ++ "\"; "
         "if (system(\"test -s \" logfile) != 0) print \"Timestamp,CPU Core Power(W),Cores Active,CPU Temp(C),Pressure Level\" > logfile} "
         "/\\*\\*\\* Sampled system activity/ {timestamp=$6 \" \" $7 \" \" $8 \" \" $9} "
-        "/Intel energy model derived CPU core power/ {power=$NF; gsub(/W/, \"\", power)} "  % Remove 'W' from power
-        % "/Intel energy model derived CPU core power/ {power=$NF} "
+        "/Intel energy model derived CPU core power/ {power=$NF; gsub(/W/, \"\", power)} "
         % "/Cores Active:/ {util=$NF} "
         "/Avg Num of Cores Active/ {util=$NF} "
         "/Current pressure level/ {pressure=$NF} "
         "/CPU die temperature/ {temp=$(NF-1); "
         "print timestamp \",\" power \",\" util \",\" temp \",\" pressure >> logfile; "
         "power=\"N/A\"; util=\"N/A\"; temp=\"N/A\"; timestamp=\"N/A\"; pressure=\"N/A\"}'",
-    % io:format("Executing command: ~p~n", [PowerMetricsCmd]),
     os:cmd(PowerMetricsCmd),
     timer:sleep(6000),
     IdleLogFile.
@@ -106,17 +103,13 @@ log_idle_power() ->
 start_power_metrics() ->
     BenchmarkLogFile = generate_log_filename("power_metrics"),
     io:format("Benchmark sampling started, writing to ~p~n", [BenchmarkLogFile]),
-    % PowerMetricsCmd = "sudo powermetrics -s cpu_power -i 100 -a 0 --hide-cpu-duty-cycle --show-extra-power-info | "
-    %                     "grep -i \"Intel energy model derived CPU core power\" | "
-    %                     "while read line; do echo \"$(date '+%Y-%m-%d %H:%M:%S') $line\" >> " ++ BenchmarkLogFile ++ "; done &",
     PowerMetricsCmd = 
         "sudo powermetrics --samplers cpu_power,thermal,smc -i 100 -a 0 "
         "--hide-cpu-duty-cycle --show-extra-power-info | "
         "awk 'BEGIN {power=\"N/A\"; util=\"N/A\"; temp=\"N/A\"; timestamp=\"N/A\"; pressure=\"N/A\"; logfile=\"" ++ BenchmarkLogFile ++ "\"; "
         "if (system(\"test -s \" logfile) != 0) print \"Timestamp,CPU Core Power(W),Cores Active,CPU Temp(C),Pressure Level\" > logfile} "
         "/\\*\\*\\* Sampled system activity/ {timestamp=$6 \" \" $7 \" \" $8 \" \" $9} "
-        "/Intel energy model derived CPU core power/ {power=$NF; gsub(/W/, \"\", power)} "  % Remove 'W' from power
-        % "/Intel energy model derived CPU core power/ {power=$NF} "
+        "/Intel energy model derived CPU core power/ {power=$NF; gsub(/W/, \"\", power)} "
         % "/Cores Active:/ {util=$NF} "
         "/Avg Num of Cores Active/ {util=$NF} "
         "/Current pressure level/ {pressure=$NF} "
@@ -139,12 +132,11 @@ stop_power_metrics() ->
 
 
 generate_log_filename(BaseName) ->
-    % BaseName ++ ".log".
     {{Year, Month, Day}, {Hour, Min, Sec}} = calendar:universal_time(),
     lists:flatten(io_lib:format("~s_~p_~p_~p_~p:~p:~p.csv", 
                 [BaseName, Year, Month, Day, Hour, Min, Sec])).
 
-%% Sanitize function (removes 5% outliers from both ends)
+%% Sanitize function (removes % outliers from both ends)
 sanitize(RawList, Tolerance) when is_list(RawList), RawList =/= [] ->
     Sorted = lists:sort(RawList),
     RawListSize = length(Sorted),
@@ -156,11 +148,9 @@ sanitize(RawList, Tolerance) when is_list(RawList), RawList =/= [] ->
 sanitize([], _Tolerance) ->
     [].
 
-%% Calculate the arithmetic mean
 arithmetic_mean(List) ->
     lists:sum(List) / length(List).
 
-%% Calculate the median of a sorted list
 median(List) ->
     Sorted = lists:sort(List),
     Len = length(Sorted),
@@ -172,26 +162,21 @@ median(List) ->
             (A + B) / 2
     end.
 
-%% Calculate the geometric mean
 geometric_mean(List) when is_list(List), length(List) > 0 ->
     LogSum = lists:sum([math:log10(X) || X <- List]),
     math:pow(10, LogSum / length(List)).
 
-%% Calculate the harmonic mean
 harmonic_mean(List) ->
     length(List) / lists:sum([1 / X || X <- List]).
 
-%% Calculate standard deviation
 standard_deviation(List) ->
     Mean = arithmetic_mean(List),
     Variance = lists:sum([math:pow(X - Mean, 2) || X <- List]) / length(List),
     math:sqrt(Variance).
 
-%% Calculate coefficient of variation (CV = StdDev / Mean)
 coefficient_of_variation(List) ->
     standard_deviation(List) / arithmetic_mean(List).
 
-%% Confidence interval calculations (assuming 95% confidence level)
 confidence_low(List) ->
     Mean = arithmetic_mean(List),
     StdDev = standard_deviation(List),
@@ -202,7 +187,6 @@ confidence_high(List) ->
     StdDev = standard_deviation(List),
     Mean + (1.96 * StdDev / math:sqrt(length(List))).
 
-%% Calculate skewness
 skewness(List) ->
     Mean = arithmetic_mean(List),
     StdDev = standard_deviation(List),
