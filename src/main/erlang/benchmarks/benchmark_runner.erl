@@ -89,11 +89,14 @@ log_idle_power() ->
         "awk 'BEGIN {power=\"N/A\"; util=\"N/A\"; temp=\"N/A\"; timestamp=\"N/A\"; pressure=\"N/A\"; logfile=\"" ++ IdleLogFile ++ "\"; "
         "if (system(\"test -s \" logfile) != 0) print \"Timestamp,CPU Core Power(W),Cores Active,CPU Temp(C),Pressure Level\" > logfile} "
         "/\\*\\*\\* Sampled system activity/ {timestamp=$6 \" \" $7 \" \" $8 \" \" $9} "
-        "/Intel energy model derived CPU core power/ {power=$NF; gsub(/W/, \"\", power)} "
+        % "/Intel energy model derived CPU core power/ {power=$NF; gsub(/W/, \"\", power)} "
+         "/Intel energy model derived CPU core power/ {power=$NF} "
         % "/Cores Active:/ {util=$NF} "
         "/Avg Num of Cores Active/ {util=$NF} "
         "/Current pressure level/ {pressure=$NF} "
-        "/CPU die temperature/ {temp=$(NF-1); "
+        % "/CPU die temperature/ {temp=$(NF-1); "
+        "/CPU die temperature/ {sub(/.*: /, \"\", $0); temp=$0; "
+        % "/CPU die temperature/ {temp=substr($0, index($0, \":\")+2)};"
         "print timestamp \",\" power \",\" util \",\" temp \",\" pressure >> logfile; "
         "power=\"N/A\"; util=\"N/A\"; temp=\"N/A\"; timestamp=\"N/A\"; pressure=\"N/A\"}'",
     os:cmd(PowerMetricsCmd),
@@ -109,11 +112,13 @@ start_power_metrics() ->
         "awk 'BEGIN {power=\"N/A\"; util=\"N/A\"; temp=\"N/A\"; timestamp=\"N/A\"; pressure=\"N/A\"; logfile=\"" ++ BenchmarkLogFile ++ "\"; "
         "if (system(\"test -s \" logfile) != 0) print \"Timestamp,CPU Core Power(W),Cores Active,CPU Temp(C),Pressure Level\" > logfile} "
         "/\\*\\*\\* Sampled system activity/ {timestamp=$6 \" \" $7 \" \" $8 \" \" $9} "
-        "/Intel energy model derived CPU core power/ {power=$NF; gsub(/W/, \"\", power)} "
+        % "/Intel energy model derived CPU core power/ {power=$NF; gsub(/W/, \"\", power)} "
+        "/Intel energy model derived CPU core power/ {power=$NF} "
         % "/Cores Active:/ {util=$NF} "
         "/Avg Num of Cores Active/ {util=$NF} "
         "/Current pressure level/ {pressure=$NF} "
-        "/CPU die temperature/ {temp=$(NF-1); "
+        % "/CPU die temperature/ {temp=$(NF-1); "
+        "/CPU die temperature/ {sub(/.*: /, \"\", $0); temp=$0; "
         "print timestamp \",\" power \",\" util \",\" temp \",\" pressure >> logfile; "
         "power=\"N/A\"; util=\"N/A\"; temp=\"N/A\"; timestamp=\"N/A\"; pressure=\"N/A\"}' &",
                 

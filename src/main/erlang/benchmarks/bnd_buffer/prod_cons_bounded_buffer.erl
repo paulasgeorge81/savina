@@ -9,67 +9,72 @@
 -define(CONS_COST, 25).
 
 run() ->
-    ManagerPid = spawn(?MODULE, manager, [self(), [], [], 0, ?NUM_PRODUCERS, []]),
-    % Spawn producers
-    [spawn(?MODULE, producer, [ManagerPid, ?NUM_ITEMS_PER_PRODUCER]) || _ <- lists:seq(1, ?NUM_PRODUCERS)],
-
+    Parent = self(),
+    ManagerPid = spawn(?MODULE, manager, [Parent, [], [], 0, ?NUM_PRODUCERS, []]),
 
     % Spawn consumers
     [spawn(?MODULE, consumer, [ManagerPid]) || _ <- lists:seq(1, ?NUM_CONSUMERS)],
 
+    % Spawn producers
+    [spawn(?MODULE, producer, [ManagerPid, ?NUM_ITEMS_PER_PRODUCER]) || _ <- lists:seq(1, ?NUM_PRODUCERS)],
+
     % Wait for termination message
-    receive done -> io:format("Benchmark completed.~n") end.
+    receive 
+        done -> io:format("Benchmark completed.~n") 
+    end.
 
-manager(Parent, Producers, Consumers, TerminatedProducers, TotalProducers, Buffer) ->
+manager(Parent, Producers, Consumers, NumTerminatedProducers, NumProducers, PendingData) ->
     receive
-        {produce, ProducerPid, Item} ->
-            if length(Buffer) >= ?BUFFER_SIZE ->  % Buffer full, store producer
-                   manager(Parent, [ProducerPid | Producers], Consumers, TerminatedProducers, TotalProducers, Buffer);
-               true ->
-                   case Consumers of
-                       [] -> manager(Parent, Producers, Consumers, TerminatedProducers, TotalProducers, [{ProducerPid, Item} | Buffer]);
-                       [ConsumerPid | RestConsumers] ->
-                           ConsumerPid ! {consume, Item},
-                           ProducerPid ! produce_more,
-                           manager(Parent, Producers, RestConsumers, TerminatedProducers, TotalProducers, Buffer)
-                   end
+        {data, Data, ProducerPid} ->
+            case Consumers of
+                [] -> manager(Parent, Producers, Consumers, NumTerminatedProducers, NumProducers, [{Data, ProducerPid} | PendingData]);
+                [ConsumerPid | RestConsumers] ->
+                    ConsumerPid ! {consume, Data},
+                    ProducerPid ! produce,  % Ensure producer continues working
+                    manager(Parent, Producers, RestConsumers, NumTerminatedProducers, NumProducers, PendingData)
             end;
-        
-        {consume_ready, ConsumerPid} ->
-            case Buffer of
-                [] -> manager(Parent, Producers, [ConsumerPid | Consumers], TerminatedProducers, TotalProducers, Buffer);
-                [{ProducerPid, Item} | RestBuffer] ->
-                    ConsumerPid ! {consume, Item},
-                    ProducerPid ! produce_more,
-                    manager(Parent, Producers, Consumers, TerminatedProducers, TotalProducers, RestBuffer)
+    
+        {consumer_available, ConsumerPid} ->
+            case PendingData of
+                [] -> 
+                    manager(Parent, Producers, [ConsumerPid | Consumers], NumTerminatedProducers, NumProducers, PendingData);
+                [{Data, ProducerPid} | RestPendingData] ->
+                    ConsumerPid ! {consume, Data},
+                    ProducerPid ! produce,
+                    manager(Parent, Producers, Consumers, NumTerminatedProducers, NumProducers, RestPendingData)
             end;
 
-        {producer_done, _ProducerPid} ->
-            NewTerminatedProducers = TerminatedProducers + 1,
-            if NewTerminatedProducers == TotalProducers, length(Consumers) == ?NUM_CONSUMERS ->
-                   Parent ! done,
-                   io:format("All producers and consumers are done. Exiting manager.~n");
-               true -> manager(Parent, Producers, Consumers, NewTerminatedProducers, TotalProducers, Buffer)
+        {producer_exit, _ProducerId} ->
+            NewNumTerminatedProducers = NumTerminatedProducers + 1,
+            if 
+                NewNumTerminatedProducers == NumProducers -> 
+                    [Pid ! stop || Pid <- Consumers],
+                    Parent ! done, 
+                    exit(normal);
+                true ->
+                    manager(Parent, Producers, Consumers, NewNumTerminatedProducers, NumProducers, PendingData)
             end
     end.
 
 producer(ManagerPid, 0) ->
-    ManagerPid ! {producer_done, self()};
+    ManagerPid ! {producer_exit, self()};
 producer(ManagerPid, RemainingItems) ->
     Data = process_item(0.0, ?PROD_COST),
-    ManagerPid ! {produce, self(), Data},
+    ManagerPid ! {data, Data, self()},
     receive 
-        produce_more -> 
+        produce -> 
             producer(ManagerPid, RemainingItems - 1) 
     end.
 
+
 consumer(ManagerPid) ->
-    ManagerPid ! {consume_ready, self()},
+    ManagerPid ! {consumer_available, self()},
     receive
-        {consume, Item} ->
-            process_item(Item, ?CONS_COST),
+        {consume, Data} -> 
+            process_item(Data, ?CONS_COST),
             consumer(ManagerPid);
-        stop -> ok
+        stop -> 
+            exit(normal)
     end.
 
 process_item(CurTerm, Cost) ->
@@ -89,7 +94,6 @@ inner_loop(Res, 0, _RandState) ->
 inner_loop(Res, Count, RandState) when Count > 0 ->
     {RandVal, NewRandState} = pseudo_random:next_double(RandState),
     inner_loop(Res + math:log(abs(RandVal) + 0.01), Count - 1, NewRandState).
-
  
 
 print_config() ->
