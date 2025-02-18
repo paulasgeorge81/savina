@@ -11,26 +11,33 @@
 run() ->
     Parent = self(),
     AdjustedBufferSize = ?BUFFER_SIZE - ?NUM_PRODUCERS,
-    % ManagerPid = spawn(?MODULE, manager, [Parent, [], [], 0, ?NUM_PRODUCERS, [], AdjustedBufferSize]),
     ManagerPid = spawn(?MODULE, manager, [Parent, [], [], 0, 0, ?NUM_PRODUCERS, [], 0, AdjustedBufferSize]),
 
-
     % Spawn consumers
-    [spawn(?MODULE, consumer, [ManagerPid]) || _ <- lists:seq(1, ?NUM_CONSUMERS)],
+    ConsumerPids = [spawn(?MODULE, consumer, [ManagerPid]) || _ <- lists:seq(1, ?NUM_CONSUMERS)],
 
     % Spawn producers
     ProducerPids = [spawn(?MODULE, producer, [ManagerPid, ?NUM_ITEMS_PER_PRODUCER]) || _ <- lists:seq(1, ?NUM_PRODUCERS)],
+    
+    % send the list of consumers to manager
+    ManagerPid ! {consumers, ConsumerPids},
     
     % Send initial production messages
     [Pid ! produce || Pid <- ProducerPids],
 
     % Wait for termination message
     receive 
-        done -> io:format("Benchmark completed.~n") 
+        done ->
+            ok
+            %  io:format("Benchmark completed.~n") 
     end.
 
 manager(Parent, AvailableProducers, AvailableConsumers, AvailableConsumersSize, NumTerminatedProducers, NumProducers, PendingData, PendingDataSize, AdjustedBufferSize) ->
     receive
+        {consumers, Consumers} ->
+            % NewAvailableConsumersSize = length(Consumers),
+            % NewAvailableConsumersSize = ?NUM_CONSUMERS,
+            manager(Parent, AvailableProducers, Consumers, ?NUM_CONSUMERS, NumTerminatedProducers, NumProducers, PendingData, PendingDataSize, AdjustedBufferSize);
         {data, Data, ProducerPid} ->
             case AvailableConsumers of
                 [] -> 
@@ -60,48 +67,40 @@ manager(Parent, AvailableProducers, AvailableConsumers, AvailableConsumersSize, 
         {consumer_available, ConsumerPid} ->
             case PendingData of
                 [] -> 
-                    NewAvailableConsumers = [ConsumerPid | AvailableConsumers],
-                    NewAvailableConsumersSize = AvailableConsumersSize + 1,
-                    try_exit(Parent, AvailableProducers, NewAvailableConsumers, NewAvailableConsumersSize, NumTerminatedProducers, NumProducers, PendingData, PendingDataSize, AdjustedBufferSize);
-
+                    % NewAvailableConsumers = [ConsumerPid | AvailableConsumers],
+                    % NewAvailableConsumersSize = AvailableConsumersSize + 1,
+                    % try_exit(Parent, AvailableProducers, NewAvailableConsumers, NewAvailableConsumersSize, NumTerminatedProducers, NumProducers, PendingData, PendingDataSize, AdjustedBufferSize);
+                    try_exit(Parent, AvailableProducers, [ConsumerPid | AvailableConsumers], AvailableConsumersSize + 1, NumTerminatedProducers, NumProducers, PendingData, PendingDataSize, AdjustedBufferSize);
                 [{Data, _ProducerPid} | RestPendingData] ->
                     ConsumerPid ! {consume, Data},
-                    NewPendingDataSize = PendingDataSize - 1,
+                    % NewPendingDataSize = PendingDataSize - 1,
                     case AvailableProducers of
                         [P | RestProducers] ->
                             P ! produce,
-                            manager(Parent, RestProducers, AvailableConsumers, AvailableConsumersSize, NumTerminatedProducers, NumProducers, RestPendingData, NewPendingDataSize, AdjustedBufferSize);
+                            % manager(Parent, RestProducers, AvailableConsumers, AvailableConsumersSize, NumTerminatedProducers, NumProducers, RestPendingData, NewPendingDataSize, AdjustedBufferSize);
+                            manager(Parent, RestProducers, AvailableConsumers, AvailableConsumersSize, NumTerminatedProducers, NumProducers, RestPendingData, PendingDataSize - 1, AdjustedBufferSize);
                         [] ->
-                            manager(Parent, AvailableProducers, AvailableConsumers, AvailableConsumersSize, NumTerminatedProducers, NumProducers, RestPendingData, NewPendingDataSize, AdjustedBufferSize)
+                            % manager(Parent, AvailableProducers, AvailableConsumers, AvailableConsumersSize, NumTerminatedProducers, NumProducers, RestPendingData, NewPendingDataSize, AdjustedBufferSize)
+                            manager(Parent, AvailableProducers, AvailableConsumers, AvailableConsumersSize, NumTerminatedProducers, NumProducers, RestPendingData, PendingDataSize - 1, AdjustedBufferSize)
                     end
                     
             end;
 
         {producer_exit, _ProducerId} ->
-            NewNumTerminatedProducers = NumTerminatedProducers + 1,
-            try_exit(Parent, AvailableProducers, AvailableConsumers, AvailableConsumersSize, NewNumTerminatedProducers, NumProducers, PendingData, PendingDataSize, AdjustedBufferSize)
+            % NewNumTerminatedProducers = NumTerminatedProducers + 1,
+            % try_exit(Parent, AvailableProducers, AvailableConsumers, AvailableConsumersSize, NewNumTerminatedProducers, NumProducers, PendingData, PendingDataSize, AdjustedBufferSize)
+            try_exit(Parent, AvailableProducers, AvailableConsumers, AvailableConsumersSize, NumTerminatedProducers + 1, NumProducers, PendingData, PendingDataSize, AdjustedBufferSize)
     end.
 
 try_exit(Parent, AvailableProducers, AvailableConsumers, AvailableConsumersSize, NumTerminatedProducers, NumProducers, PendingData, PendingDataSize, AdjustedBufferSize) ->
-        if 
-            NumTerminatedProducers == NumProducers andalso AvailableConsumersSize == ?NUM_CONSUMERS ->
-            % NumTerminatedProducers == NumProducers andalso length(AvailableConsumers) == ?NUM_CONSUMERS ->
+        case NumTerminatedProducers == NumProducers andalso AvailableConsumersSize == ?NUM_CONSUMERS of
+            true ->
                 [Pid ! stop || Pid <- AvailableConsumers],
                 Parent ! done,
-                exit(normal);
-            true ->
+                ok;
+            false ->
                 manager(Parent, AvailableProducers, AvailableConsumers, AvailableConsumersSize, NumTerminatedProducers, NumProducers, PendingData, PendingDataSize, AdjustedBufferSize)
         end.
-
-% producer(ManagerPid, 0) ->
-%     ManagerPid ! {producer_exit, self()};
-% producer(ManagerPid, RemainingItems) ->
-%     Data = process_item(0.0, ?PROD_COST),
-%     ManagerPid ! {data, Data, self()},
-%     receive 
-%         produce -> 
-%             producer(ManagerPid, RemainingItems - 1) 
-%     end.
 
 producer(ManagerPid, RemainingItems) ->
     receive
@@ -113,18 +112,15 @@ producer(ManagerPid, RemainingItems) ->
             ManagerPid ! {producer_exit, self()}
     end.
 
-
-
 consumer(ManagerPid) ->
-    ManagerPid ! {consumer_available, self()},
     receive
         {consume, Data} -> 
             process_item(Data, ?CONS_COST),
+            ManagerPid ! {consumer_available, self()},
             consumer(ManagerPid);
         stop -> 
-            exit(normal)
+            ok
     end.
-
 
 process_item(CurTerm, Cost) ->
     RandState = pseudo_random:new(Cost),
@@ -143,7 +139,6 @@ inner_loop(Res, 0, _RandState) ->
 inner_loop(Res, Count, RandState) when Count > 0 ->
     {RandVal, NewRandState} = pseudo_random:next_double(RandState),
     inner_loop(Res + math:log(abs(RandVal) + 0.01), Count - 1, NewRandState).
- 
 
 print_config() ->
     io:format("    Buffer size = ~p~n",[?BUFFER_SIZE]),
