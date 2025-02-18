@@ -1,5 +1,5 @@
 -module(prod_cons_bounded_buffer).
--export([run/0, manager/6, producer/2, consumer/1, process_item/2,print_config/0]).
+-export([run/0, manager/7, producer/2, consumer/1, process_item/2,print_config/0]).
 
 -define(BUFFER_SIZE, 50).
 -define(NUM_PRODUCERS, 40).
@@ -10,7 +10,8 @@
 
 run() ->
     Parent = self(),
-    ManagerPid = spawn(?MODULE, manager, [Parent, [], [], 0, ?NUM_PRODUCERS, []]),
+    AdjustedBufferSize = ?BUFFER_SIZE - ?NUM_PRODUCERS,
+    ManagerPid = spawn(?MODULE, manager, [Parent, [], [], 0, ?NUM_PRODUCERS, [], AdjustedBufferSize]),
 
     % Spawn consumers
     [spawn(?MODULE, consumer, [ManagerPid]) || _ <- lists:seq(1, ?NUM_CONSUMERS)],
@@ -23,38 +24,86 @@ run() ->
         done -> io:format("Benchmark completed.~n") 
     end.
 
-manager(Parent, Producers, Consumers, NumTerminatedProducers, NumProducers, PendingData) ->
+manager(Parent, AvailableProducers, AvailableConsumers, NumTerminatedProducers, NumProducers, PendingData, AdjustedBufferSize) ->
     receive
         {data, Data, ProducerPid} ->
-            case Consumers of
-                [] -> manager(Parent, Producers, Consumers, NumTerminatedProducers, NumProducers, [{Data, ProducerPid} | PendingData]);
+            case AvailableConsumers of
+                [] -> 
+                    NewPendingData = [{Data, ProducerPid} | PendingData],
+                    if 
+                        length(NewPendingData) >= AdjustedBufferSize ->
+                            manager(Parent, [ProducerPid | AvailableProducers], AvailableConsumers, NumTerminatedProducers, NumProducers, NewPendingData, AdjustedBufferSize);
+                        true -> 
+                            ProducerPid ! produce,
+                            manager(Parent, AvailableProducers, AvailableConsumers, NumTerminatedProducers, NumProducers, NewPendingData, AdjustedBufferSize)
+                    end;
+                
                 [ConsumerPid | RestConsumers] ->
                     ConsumerPid ! {consume, Data},
-                    ProducerPid ! produce,  % Ensure producer continues working
-                    manager(Parent, Producers, RestConsumers, NumTerminatedProducers, NumProducers, PendingData)
+                    if length(PendingData) >= AdjustedBufferSize ->
+                        manager(Parent, [ProducerPid | AvailableProducers], RestConsumers, NumTerminatedProducers, NumProducers, PendingData, AdjustedBufferSize);
+                    true ->
+                        ProducerPid ! produce,
+                        manager(Parent, AvailableProducers, RestConsumers, NumTerminatedProducers, NumProducers, PendingData, AdjustedBufferSize)
+                    end
             end;
+
     
         {consumer_available, ConsumerPid} ->
             case PendingData of
                 [] -> 
-                    manager(Parent, Producers, [ConsumerPid | Consumers], NumTerminatedProducers, NumProducers, PendingData);
-                [{Data, ProducerPid} | RestPendingData] ->
+                    % Consumer waits if no data is available
+                    % NewAvailableConsumers = [ConsumerPid | AvailableConsumers],
+                    % if 
+                    %     NumTerminatedProducers == NumProducers andalso length(NewAvailableConsumers) == ?NUM_CONSUMERS ->
+                    %         [Pid ! stop || Pid <- AvailableConsumers],
+                    %         Parent ! done,
+                    %         exit(normal);
+                    %     true -> 
+                    %         manager(Parent, AvailableProducers, [ConsumerPid | AvailableConsumers], NumTerminatedProducers, NumProducers, PendingData, AdjustedBufferSize)
+                    % end;
+                    % Consumer waits if no data is available
+                    NewAvailableConsumers = [ConsumerPid | AvailableConsumers],
+                    try_exit(Parent, AvailableProducers, NewAvailableConsumers, NumTerminatedProducers, NumProducers, PendingData, AdjustedBufferSize);
+
+
+                [{Data, _ProducerPid} | RestPendingData] ->
                     ConsumerPid ! {consume, Data},
-                    ProducerPid ! produce,
-                    manager(Parent, Producers, Consumers, NumTerminatedProducers, NumProducers, RestPendingData)
+                    case AvailableProducers of
+                        [P | RestProducers] ->
+                            P ! produce,
+                            manager(Parent, RestProducers, AvailableConsumers, NumTerminatedProducers, NumProducers, RestPendingData, AdjustedBufferSize);
+                        [] ->
+                            manager(Parent, AvailableProducers, AvailableConsumers, NumTerminatedProducers, NumProducers, RestPendingData, AdjustedBufferSize)
+                    end
+                    
             end;
 
         {producer_exit, _ProducerId} ->
             NewNumTerminatedProducers = NumTerminatedProducers + 1,
-            if 
-                NewNumTerminatedProducers == NumProducers -> 
-                    [Pid ! stop || Pid <- Consumers],
-                    Parent ! done, 
-                    exit(normal);
-                true ->
-                    manager(Parent, Producers, Consumers, NewNumTerminatedProducers, NumProducers, PendingData)
-            end
+            try_exit(Parent, AvailableProducers, AvailableConsumers, NewNumTerminatedProducers, NumProducers, PendingData, AdjustedBufferSize)
+
+            % NewNumTerminatedProducers = NumTerminatedProducers + 1,
+            % if 
+            %     NewNumTerminatedProducers == NumProducers andalso length(AvailableConsumers) == ?NUM_CONSUMERS ->
+            %         [Pid ! stop || Pid <- AvailableConsumers],
+            %         Parent ! done,
+            %         exit(normal);
+            %     true -> 
+            %         manager(Parent, AvailableProducers, AvailableConsumers, NewNumTerminatedProducers, NumProducers, PendingData, AdjustedBufferSize)
+            % end
+
     end.
+
+try_exit(Parent, AvailableProducers, AvailableConsumers, NumTerminatedProducers, NumProducers, PendingData, AdjustedBufferSize) ->
+        if 
+            NumTerminatedProducers == NumProducers andalso length(AvailableConsumers) == ?NUM_CONSUMERS ->
+                [Pid ! stop || Pid <- AvailableConsumers],
+                Parent ! done,
+                exit(normal);
+            true ->
+                manager(Parent, AvailableProducers, AvailableConsumers, NumTerminatedProducers, NumProducers, PendingData, AdjustedBufferSize)
+        end.
 
 producer(ManagerPid, 0) ->
     ManagerPid ! {producer_exit, self()};
@@ -76,6 +125,7 @@ consumer(ManagerPid) ->
         stop -> 
             exit(normal)
     end.
+
 
 process_item(CurTerm, Cost) ->
     RandState = pseudo_random:new(Cost),
