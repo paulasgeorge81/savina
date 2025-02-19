@@ -65,8 +65,8 @@ run(BenchmarkModule, NumIterations) ->
         Skew = skewness(ExecTimes),
         
         io:format("Execution - Summary: ~n"),
-        io:format("Total executions: ~p ms~n", [length(RawExecTimes)]),
-        io:format("Filtered executions: ~p ms~n", [length(ExecTimes)]),
+        io:format("   Total executions: ~p ms~n", [length(RawExecTimes)]),
+        io:format("   Filtered executions: ~p ms~n", [length(ExecTimes)]),
         io:format("~s Best Time: ~.3f ms~n", [BenchmarkModule, BestTime]),
         io:format("~s Worst Time: ~.3f ms~n", [BenchmarkModule, WorstTime]),
         io:format("~s Median: ~.3f ms~n", [BenchmarkModule, MedianTime]),
