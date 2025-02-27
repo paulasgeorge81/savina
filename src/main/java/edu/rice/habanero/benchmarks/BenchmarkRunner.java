@@ -136,7 +136,7 @@ public class BenchmarkRunner {
         "sudo powermetrics --samplers cpu_power,thermal,smc -n 5 -i 1000 -a 0 "
         +"--hide-cpu-duty-cycle --show-extra-power-info | "
         +"awk 'BEGIN {core_power=\"N/A\"; gt_power=\"N/A\"; dram_power=\"N/A\"; cpu_gt_sa_power=\"N/A\"; cores_active=\"N/A\"; avg_cores_active=\"N/A\"; temp=\"N/A\"; timestamp=\"N/A\"; pressure=\"N/A\"; logfile=\"" + IdleLogFile + "\"; "
-        +"if (system(\"test -s \" logfile) != 0) print \"Timestamp,CPU Core Power(W),GT Power(W),DRAM Power(W),(CPUs+GT+SA) Power(W),Cores Active(%),Avg Cores Active,CPU Temp(C),Pressure Level\" > logfile} "
+        +"if (system(\"test -s \" logfile) != 0) print \"Timestamp,CPU Core Power(W),GT Power(W),DRAM Power(W),(CPUs+GT+SA) Power(W),Avg Num Cores Active,Cores Active(%),CPU Temp(C),Pressure Level\" > logfile} "
         +"/\\*\\*\\* Sampled system activity/ {timestamp=$6 \" \" $7 \" \" $8 \" \" $9} "
         +"/Intel energy model derived package power/ {cpu_gt_sa_power=$NF; gsub(/W/, \"\", cpu_gt_sa_power)} "
         +"/Intel energy model derived CPU core power/ {core_power=$NF; gsub(/W/, \"\", core_power)} "
@@ -146,7 +146,7 @@ public class BenchmarkRunner {
         +"/^(Cores Active:)/ {cores_active=$NF; gsub(/%/, \"\", cores_active)} "
         +"/Current pressure level/ {pressure=$NF} "
         +"/CPU die temperature/ {sub(/.*: /, \"\", $0); temp=$0; "
-        +"print timestamp \",\" core_power \",\" gt_power \",\" dram_power \",\" cpu_gt_sa_power \",\" cores_active \",\" avg_cores_active \",\" temp \",\" pressure >> logfile; "
+        +"print timestamp \",\" core_power \",\" gt_power \",\" dram_power \",\" cpu_gt_sa_power \",\" avg_cores_active \",\" cores_active \",\" temp \",\" pressure >> logfile; "
         +"core_power=\"N/A\"; gt_power=\"N/A\"; dram_power=\"N/A\"; cpu_gt_sa_power=\"N/A\"; cores_active=\"N/A\"; avg_cores_active=\"N/A\"; temp=\"N/A\"; timestamp=\"N/A\"; pressure=\"N/A\"}'";
         executeCommand(PowerMetricsCmd);
         try { Thread.sleep(6000); } catch (InterruptedException e) { e.printStackTrace(); }
@@ -161,7 +161,7 @@ public class BenchmarkRunner {
         "sudo powermetrics --samplers cpu_power,thermal,smc -i 100 -a 0 "
         +"--hide-cpu-duty-cycle --show-extra-power-info | "
         +"awk 'BEGIN {core_power=\"N/A\"; gt_power=\"N/A\"; dram_power=\"N/A\"; cpu_gt_sa_power=\"N/A\"; cores_active=\"N/A\"; avg_cores_active=\"N/A\"; temp=\"N/A\"; timestamp=\"N/A\"; pressure=\"N/A\"; logfile=\"" + BenchmarkLogFile + "\"; "
-        +"if (system(\"test -s \" logfile) != 0) print \"Timestamp,CPU Core Power(W),GT Power(W),DRAM Power(W),(CPUs+GT+SA) Power(W),Cores Active(%),Avg Cores Active,CPU Temp(C),Pressure Level\" > logfile} "
+        +"if (system(\"test -s \" logfile) != 0) print \"Timestamp,CPU Core Power(W),GT Power(W),DRAM Power(W),(CPUs+GT+SA) Power(W),Avg Num Cores Active,Cores Active(%),CPU Temp(C),Pressure Level\" > logfile} "
         +"/\\*\\*\\* Sampled system activity/ {timestamp=$6 \" \" $7 \" \" $8 \" \" $9} "
         +"/Intel energy model derived package power/ {cpu_gt_sa_power=$NF; gsub(/W/, \"\", cpu_gt_sa_power)} "
         +"/Intel energy model derived CPU core power/ {core_power=$NF; gsub(/W/, \"\", core_power)} "
@@ -171,7 +171,7 @@ public class BenchmarkRunner {
         +"/^(Cores Active:)/ {cores_active=$NF; gsub(/%/, \"\", cores_active)} "
         +"/Current pressure level/ {pressure=$NF} "
         +"/CPU die temperature/ {sub(/.*: /, \"\", $0); temp=$0; "
-        +"print timestamp \",\" core_power \",\" gt_power \",\" dram_power \",\" cpu_gt_sa_power \",\" cores_active \",\" avg_cores_active \",\" temp \",\" pressure >> logfile; "
+        +"print timestamp \",\" core_power \",\" gt_power \",\" dram_power \",\" cpu_gt_sa_power \",\" avg_cores_active \",\" cores_active \",\" temp \",\" pressure >> logfile; "
         +"core_power=\"N/A\"; gt_power=\"N/A\"; dram_power=\"N/A\"; cpu_gt_sa_power=\"N/A\"; cores_active=\"N/A\"; avg_cores_active=\"N/A\"; temp=\"N/A\"; timestamp=\"N/A\"; pressure=\"N/A\"}' &";
         executeCommand(PowerMetricsCmd);
         // try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
