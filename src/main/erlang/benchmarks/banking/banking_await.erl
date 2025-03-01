@@ -1,44 +1,64 @@
 -module(banking_await).
--export([run/0, teller/3, account/2, print_config/0]).
+-export([run/0, teller/5, account/2, print_config/0]).
 
 -define(A, 1000).    % Number of accounts
--define(N, 50000).   % Number of transactions
+-define(N, 50_000).   % Number of transactions
 -define(INITIAL_BALANCE, (1.7976931348623157e+308 / (?A * ?N))).
--define(AMOUNT_LIMIT, 1000).
 
 run() ->
-    Master = spawn(?MODULE, teller, [?A, ?N, self()]),
+    Main = self(),
+    Master = spawn(?MODULE, teller, [?A, ?N, 0, pseudo_random:new(123456), Main]),
     Master ! start,
     receive 
-        done -> io:format("Benchmark completed.~n") 
+        done -> 
+            ok
     end.
 
-teller(NumAccounts, NumTransactions, Parent) ->
-    Accounts = maps:from_list([{I, spawn(?MODULE, account, [I, ?INITIAL_BALANCE])} || I <- lists:seq(1, NumAccounts)]),
-    process_transactions(NumTransactions, Accounts, 0, pseudo_random:new(123456)),
-    maps:foreach(fun(_, Acc) -> Acc ! stop end, Accounts),
-    Parent ! done.
+teller(NumAccounts, NumTransactions, CompletedTransactions, RandState, Main) ->
+    Accounts = maps:from_list([{I, spawn(?MODULE, account, [I, ?INITIAL_BALANCE])} || I <- lists:seq(0, NumAccounts - 1)]),
+    receive
+      start ->
+        generate_work(RandState, NumTransactions, Accounts, self()),
+        loop(NumTransactions, CompletedTransactions, Accounts, Main)
+    end.
 
-process_transactions(0, _Accounts, Completed, _RandState) ->
-    io:format("Completed transactions: ~p~n", [Completed]);
-process_transactions(Num, Accounts, Completed, RandState) ->
-    {SrcId, RandState1} = pseudo_random:next_int((map_size(Accounts) div 10) * 8, RandState),
-    {LoopIdRaw, RandState2} = pseudo_random:next_int(map_size(Accounts) - SrcId, RandState1),
+loop(NumTransactions, CompletedTransactions, Accounts, Main) ->
+    receive
+        reply ->
+            NewCompletedTransactions = CompletedTransactions + 1,
+            case NewCompletedTransactions =:= NumTransactions of
+                true ->
+                    maps:foreach(fun(_, Acc) -> Acc ! stop end, Accounts),
+                    Main ! done;
+                false ->
+                    loop(NumTransactions, NewCompletedTransactions, Accounts, Main)
+            end
+    end.
+
+
+generate_work(_, 0, _, _) ->
+    ok;
+generate_work(RandState, NumTransactions, Accounts, Teller) ->
+    {SrcAccId, RandState1} = pseudo_random:next_int((maps:size(Accounts) div 10) * 8, RandState),
+    {LoopIdRaw, RandState2} = pseudo_random:next_int(map_size(Accounts) - SrcAccId, RandState1),
     LoopId = max(1, LoopIdRaw),
-    DestId = SrcId + LoopId,
+    DestId = SrcAccId + LoopId,
+   
+    {SrcAcc, DestAcc}  = {maps:get(SrcAccId, Accounts), maps:get(DestId, Accounts)},
     {Amount, RandState3} = pseudo_random:next_double(RandState2),
-    ScaledAmount = Amount * ?AMOUNT_LIMIT,
+    ScaledAmount = abs(Amount) * 1000,
+    SrcAcc ! {credit, ScaledAmount, DestAcc, Teller},
+    generate_work(RandState3, NumTransactions - 1, Accounts, Teller).
 
-    maps:get(SrcId, Accounts) ! {credit, ScaledAmount, maps:get(DestId, Accounts), self()},
-    receive reply -> 
-        process_transactions(Num - 1, Accounts, Completed + 1, RandState3) 
-    end.
 
 account(Id, Balance) ->
     receive
         {credit, Amount, DestAccount, Sender} ->
             DestAccount ! {debit, Amount, self()},
-            receive reply -> Sender ! reply end,
+            receive 
+                reply -> 
+                    Sender ! reply 
+            end,
             account(Id, Balance - Amount);
         {debit, Amount, Sender} ->
             Sender ! reply,
