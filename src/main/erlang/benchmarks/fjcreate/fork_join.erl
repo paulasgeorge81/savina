@@ -1,15 +1,19 @@
 -module(fork_join).
--export([run/0, worker/1, perform_computation/1, print_config/0]).
--define(N, 40000).
+-export([run/0, worker/0, perform_computation/1, print_config/0]).
+-define(N, 40_000).
 
 run() ->
     Main = self(),
-    [spawn_link(fun() -> worker(Main) end) || _ <- lists:seq(1, ?N)],
+    Workers = [spawn_link(fun() -> worker() end) || _ <- lists:seq(1, ?N)],
+    [Worker ! {start, Main} || Worker <- Workers],
     wait_for_workers(?N).
 
-worker(Main) ->
-    perform_computation(37.2),
-    Main ! done.
+worker() ->
+    receive
+        {start, Main} ->
+            perform_computation(37.2),
+            Main ! done
+    end.
 
 wait_for_workers(0) -> ok;
 wait_for_workers(N) ->
