@@ -1,10 +1,15 @@
 -module(thread_ring).
 -export([start/2, loop/2,run/0, print_config/0]).
--define(N, 100). % number of actors
+-define(N, 100000). % number of actors
 -define(R, 100_000). % number of pings/no of rounds
 
 run() ->
-    start(?N, ?R).
+    register(main, self()),
+    start(?N, ?R),
+    receive
+      done ->
+        ok
+    end.
 start(N, R) -> 
     Pids = [spawn(?MODULE, loop, [self(), undefined]) || _ <- lists:seq(1, N)],
     setup_ring(Pids),
@@ -30,7 +35,7 @@ loop(Self, Next) ->
             Next ! {exit, Self},  %% Send exit message with the first actor's PID
             loop(Self, Next);
         {exit, Original} when Self =:= Original -> %% Terminate when exit message loops back
-            ok;
+            main ! done;
         {exit, Original} ->
             Next ! {exit, Original},
             ok
