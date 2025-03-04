@@ -1,6 +1,6 @@
 -module(sleeping_barber).
 -export([run/0, barber/1, waiting_room/5, customer_factory/3, customer/2, print_config/0]).
--define(N, 5). % num haircuts
+-define(N, 5_000). % num haircuts
 -define(W, 1_000). % waiting room capacity
 -define(APR, 1_000). % average production rate
 -define(AHR, 1_000). % average haircut rate
