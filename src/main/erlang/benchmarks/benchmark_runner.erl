@@ -22,19 +22,19 @@ run(BenchmarkModule, NumIterations) ->
         io:format("Runtime: Erlang/OTP:~s~n", [ErlangVersion]),
         io:format("Erlang Emulator Version: ~s~n", [EmulatorVersion]),
         io:format("Benchmark: ~p~n", [BenchmarkModule]),
+        io:format("Config: ~n"),
         BenchmarkModule:print_config(),
         io:format("~n"),
         
         io:format("      O/S Version = ~s", [OS_Version]),
         io:format("         O/S Name = Mac OS X~n"),
-        io:format("         O/S Arch = ~s", [OS_Arch]),
+        io:format("         O/S Arch = ~s~n", [OS_Arch]),
 
         % Log idle power consumption before benchmarking
         log_idle_power(),
 
         % Start power metrics collection
         start_power_metrics(),
-        
         io:format("Execution - Iterations:~n"),
         RawExecTimes = [
             begin
@@ -106,7 +106,7 @@ log_idle_power() ->
 
 start_power_metrics() ->
     BenchmarkLogFile = generate_log_filename("power_metrics"),
-    io:format("Benchmark sampling started, writing to ~p~n", [BenchmarkLogFile]),
+    io:format("Benchmark sampling started, writing to ~p~n~n", [BenchmarkLogFile]),
     PowerMetricsCmd = 
         "sudo powermetrics --samplers cpu_power,thermal,smc -i 100 -a 0 "
         "--hide-cpu-duty-cycle --show-extra-power-info | "
@@ -133,6 +133,7 @@ stop_power_metrics() ->
     os:cmd("sudo pkill -2 powermetrics"),
     {_Date, Time} = calendar:universal_time(),
     FormattedTimestamp = io_lib:format("~p:~p:~p", tuple_to_list(Time)),
+     io:format("~n"),
     io:format("PowerMetrics stopped at ~p.~n", [lists:flatten(FormattedTimestamp)]),
     io:format("~n").
 

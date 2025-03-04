@@ -61,7 +61,7 @@ public class BenchmarkRunner {
         System.out.printf(argOutputFormat, "O/S Version", System.getProperty("os.version"));
         System.out.printf(argOutputFormat, "O/S Name", System.getProperty("os.name"));
         System.out.printf(argOutputFormat, "O/S Arch", System.getProperty("os.arch"));
-
+        System.out.println();
         //Log idle power consumption before benchmarking
         logIdlePower();
 
@@ -156,7 +156,7 @@ public class BenchmarkRunner {
 
     private static String startPowerMetrics() {
         String BenchmarkLogFile = generateLogFilename("power_metrics");
-        System.out.println("Benchmark sampling started, writing to " + BenchmarkLogFile);
+        System.out.println("Benchmark sampling started, writing to " + BenchmarkLogFile+ "\n");
         String PowerMetricsCmd = 
         "sudo powermetrics --samplers cpu_power,thermal,smc -i 100 -a 0 "
         +"--hide-cpu-duty-cycle --show-extra-power-info | "
@@ -185,7 +185,7 @@ public class BenchmarkRunner {
 
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
         String formattedTime = sdf.format(new Date());
-
+        System.out.println();
         System.out.println("PowerMetrics stopped at " + formattedTime + ".");
         System.out.println();
     }
