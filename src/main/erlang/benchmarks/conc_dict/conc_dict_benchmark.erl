@@ -1,4 +1,4 @@
--module(conc_dict).
+-module(conc_dict_benchmark).
 -export([run/0, master/4, worker/4, dictionary/1, print_config/0]).
 
 -define(NUM_ENTITIES, 20).

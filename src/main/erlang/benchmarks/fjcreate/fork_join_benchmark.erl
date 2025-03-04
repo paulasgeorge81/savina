@@ -1,4 +1,4 @@
--module(fork_join).
+-module(fork_join_benchmark).
 -export([run/0, worker/0, perform_computation/1, print_config/0]).
 -define(N, 40_000).
 

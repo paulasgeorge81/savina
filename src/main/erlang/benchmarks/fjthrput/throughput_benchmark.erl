@@ -1,4 +1,4 @@
--module(throughput).
+-module(throughput_benchmark).
 -export([run/0, worker/2, perform_computation/1, print_config/0]).
 
 -define(N, 10_000).   % Messages per actor

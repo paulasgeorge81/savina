@@ -1,4 +1,4 @@
--module(thread_ring).
+-module(thread_ring_benchmark).
 -export([run/0, actor/3, print_config/0]).
 -define(N, 100). % number of actors
 -define(R, 100_000). % number of pings/no of rounds

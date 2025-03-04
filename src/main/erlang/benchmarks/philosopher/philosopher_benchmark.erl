@@ -1,4 +1,4 @@
--module(philosopher).
+-module(philosopher_benchmark).
 -export([run/0, print_config/0]).
 
 -define(N, 20).      % Number of philosophers

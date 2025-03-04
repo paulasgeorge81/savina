@@ -1,4 +1,4 @@
--module(fibonacci).
+-module(fibonacci_benchmark).
 -export([run/0, fibonacci/3, print_config/0]).
 
 -define(N, 30).

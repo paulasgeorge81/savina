@@ -1,4 +1,4 @@
--module(sleeping_barber).
+-module(sleeping_barber_benchmark).
 -export([run/0, barber/1, waiting_room/5, customer_factory/3, customer/2, print_config/0]).
 -define(N, 5_000). % num haircuts
 -define(W, 1_000). % waiting room capacity

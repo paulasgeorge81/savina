@@ -1,4 +1,4 @@
--module(banking_await).
+-module(banking_await_benchmark).
 -export([run/0, teller/5, account/2, print_config/0]).
 
 -define(A, 1000).    % Number of accounts

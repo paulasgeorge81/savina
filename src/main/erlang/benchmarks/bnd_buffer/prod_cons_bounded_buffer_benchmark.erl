@@ -1,4 +1,4 @@
--module(prod_cons_bounded_buffer).
+-module(prod_cons_bounded_buffer_benchmark).
 -export([run/0, manager/9, producer/1, consumer/0, process_item/2,print_config/0]).
 
 -define(BUFFER_SIZE, 50).
