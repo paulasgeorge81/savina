@@ -2,7 +2,7 @@
 -export([run/2]).
 
 % Power metrics functions
--export([start_power_metrics/0, log_idle_power/0,stop_power_metrics/0, generate_log_filename/1]).
+-export([start_power_metrics/1, log_idle_power/1,stop_power_metrics/0, generate_log_filename/1]).
 
 % Statistics functions
 -export([
@@ -31,10 +31,10 @@ run(BenchmarkModule, NumIterations) ->
         io:format("         O/S Arch = ~s~n", [OS_Arch]),
 
         % Log idle power consumption before benchmarking
-        log_idle_power(),
+        log_idle_power(BenchmarkModule),
 
         % Start power metrics collection
-        start_power_metrics(),
+        start_power_metrics(BenchmarkModule),
         io:format("Execution - Iterations:~n"),
         RawExecTimes = [
             begin
@@ -80,8 +80,8 @@ run(BenchmarkModule, NumIterations) ->
         io:format("~s Coeff. of Variation: ~.3f~n", [BenchmarkModule, CoeffVar]),
         io:format("~s Skewness: ~.3f~n", [BenchmarkModule, Skew]).
 
-log_idle_power() ->
-    IdleLogFile = generate_log_filename("idle_power"),
+log_idle_power(BenchmarkModule) ->
+    IdleLogFile = generate_log_filename(atom_to_list(BenchmarkModule)++"_idle_power"),
     io:format("Idle sampling started, writing to ~p~n", [IdleLogFile]),
     PowerMetricsCmd = 
         "sudo powermetrics --samplers cpu_power,thermal,smc -n 5 -i 1000 -a 0 "
@@ -104,8 +104,8 @@ log_idle_power() ->
     IdleLogFile.
 
 
-start_power_metrics() ->
-    BenchmarkLogFile = generate_log_filename("power_metrics"),
+start_power_metrics(BenchmarkModule) ->
+    BenchmarkLogFile = generate_log_filename(atom_to_list(BenchmarkModule)++"_power_metrics"),
     io:format("Benchmark sampling started, writing to ~p~n~n", [BenchmarkLogFile]),
     PowerMetricsCmd = 
         "sudo powermetrics --samplers cpu_power,thermal,smc -i 100 -a 0 "

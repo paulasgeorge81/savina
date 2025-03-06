@@ -63,10 +63,11 @@ public class BenchmarkRunner {
         System.out.printf(argOutputFormat, "O/S Arch", System.getProperty("os.arch"));
         System.out.println();
         //Log idle power consumption before benchmarking
-        logIdlePower();
+        String powerMetricsBenchmarkName = benchmarkName.replaceAll("([a-z])([A-Z])", "$1_$2").toLowerCase();
+        logIdlePower(powerMetricsBenchmarkName);
 
         //Start power metrics collection
-        startPowerMetrics();
+        startPowerMetrics(powerMetricsBenchmarkName);
 
         final List<Double> rawExecTimes = new ArrayList<>(iterations);
 
@@ -129,8 +130,8 @@ public class BenchmarkRunner {
     }
 
 
-    private static String logIdlePower() {
-        String IdleLogFile = generateLogFilename("idle_power");
+    private static String logIdlePower(String Benchmark) {
+        String IdleLogFile = generateLogFilename(Benchmark+"_idle_power");
         System.out.println("Idle sampling started, writing to " + IdleLogFile);
         String PowerMetricsCmd = 
         "sudo powermetrics --samplers cpu_power,thermal,smc -n 5 -i 1000 -a 0 "
@@ -154,8 +155,8 @@ public class BenchmarkRunner {
     }
 
 
-    private static String startPowerMetrics() {
-        String BenchmarkLogFile = generateLogFilename("power_metrics");
+    private static String startPowerMetrics(String Benchmark) {
+        String BenchmarkLogFile = generateLogFilename(Benchmark+"_power_metrics");
         System.out.println("Benchmark sampling started, writing to " + BenchmarkLogFile+ "\n");
         String PowerMetricsCmd = 
         "sudo powermetrics --samplers cpu_power,thermal,smc -i 100 -a 0 "
