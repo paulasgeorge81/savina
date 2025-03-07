@@ -10,10 +10,8 @@ release.properties
 .vscode/
 *.beam
 *.log
-idle_power_*.csv
-power_metrics_*.csv
-*_idle_power_*.csv
-*_power_metrics_*.csv
+*_idle_power.csv
+*_power_metrics.csv
 .DS_Store
 **/.DS_Store
 

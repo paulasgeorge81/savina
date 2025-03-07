@@ -201,8 +201,10 @@ public class BenchmarkRunner {
     }
 
     private static String generateLogFilename(String baseName) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd_HH:mm:ss");
-        return baseName + "_" + sdf.format(new Date()) + ".csv";
+        executeCommand("mkdir -p ./src/main/data");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+        String timestamp = sdf.format(new Date());
+        return "./src/main/data/" + timestamp + "_" + baseName + ".csv";
     }
 
     public static List<Double> sanitize(final List<Double> rawList, final double tolerance) {

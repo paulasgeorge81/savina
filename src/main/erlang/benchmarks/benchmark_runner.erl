@@ -137,13 +137,13 @@ stop_power_metrics() ->
     io:format("PowerMetrics stopped at ~p.~n", [lists:flatten(FormattedTimestamp)]),
     io:format("~n").
 
-
-
 generate_log_filename(BaseName) ->
-    {{Year, Month, Day}, {Hour, Min, Sec}} = calendar:universal_time(),
-    lists:flatten(io_lib:format("~s_~p_~p_~p_~p:~p:~p.csv", 
-                [BaseName, Year, Month, Day, Hour, Min, Sec])).
+    os:cmd("mkdir -p ../../data"),
+    {{Year, Month, Day}, {Hour, Min, Sec}} = calendar:local_time(),
+    lists:flatten(io_lib:format("../../data/~4..0B~2..0B~2..0B~2..0B~2..0B~2..0B_~s.csv", 
+                [Year, Month, Day, Hour, Min, Sec, BaseName])).
 
+            
 %% Sanitize function (removes % outliers from both ends)
 sanitize(RawList, Tolerance) when is_list(RawList), RawList =/= [] ->
     Sorted = lists:sort(RawList),
