@@ -1,54 +1,59 @@
-================ ERLANG ===========================
-5> benchmark_runner:run(ping_pong_benchmark, 10).
+============================ ERLANG =====================================
+26> benchmark_runner:run(ping_pong_benchmark, 15).
 Runtime: Erlang/OTP:27
 Erlang Emulator Version: 15.1.2
 Benchmark: ping_pong_benchmark
 Config: 
-    N (num pings) = 1000000
+    N (num pings) = 500000
 
       O/S Version = 15.3.1
          O/S Name = Mac OS X
          O/S Arch = x86_64
 
-Idle sampling started, writing to "../../data/20250312164452_ping_pong_benchmark_idle_power.csv"
-Benchmark sampling started, writing to "../../data/20250312164508_ping_pong_benchmark_power_metrics.csv"
+Idle sampling started, writing to "../../data/20250315141822_ping_pong_benchmark_idle_power.csv"
+Benchmark sampling started, writing to "../../data/20250315141834_ping_pong_benchmark_power_metrics.csv"
 
 Execution - Iterations:
-ping_pong_benchmark          Iteration-1:   785.401 ms
-ping_pong_benchmark          Iteration-2:   769.734 ms
-ping_pong_benchmark          Iteration-3:   764.138 ms
-ping_pong_benchmark          Iteration-4:   737.282 ms
-ping_pong_benchmark          Iteration-5:   736.280 ms
-ping_pong_benchmark          Iteration-6:   803.114 ms
-ping_pong_benchmark          Iteration-7:   757.198 ms
-ping_pong_benchmark          Iteration-8:   2126.714 ms
-ping_pong_benchmark          Iteration-9:   753.036 ms
-ping_pong_benchmark          Iteration-10:   740.408 ms
+ping_pong_benchmark          Iteration-1:   407.113 ms
+ping_pong_benchmark          Iteration-2:   425.646 ms
+ping_pong_benchmark          Iteration-3:   400.362 ms
+ping_pong_benchmark          Iteration-4:   398.703 ms
+ping_pong_benchmark          Iteration-5:   394.313 ms
+ping_pong_benchmark          Iteration-6:   384.359 ms
+ping_pong_benchmark          Iteration-7:   384.849 ms
+ping_pong_benchmark          Iteration-8:   387.283 ms
+ping_pong_benchmark          Iteration-9:   395.322 ms
+ping_pong_benchmark          Iteration-10:   382.095 ms
+ping_pong_benchmark          Iteration-11:   384.859 ms
+ping_pong_benchmark          Iteration-12:   393.205 ms
+ping_pong_benchmark          Iteration-13:   394.592 ms
+ping_pong_benchmark          Iteration-14:   383.531 ms
+ping_pong_benchmark          Iteration-15:   378.807 ms
 
-PowerMetrics stopped at "15:45:17".
+PowerMetrics stopped at "14:18:40".
 
 Execution - Summary: 
-   Total executions: 10
-   Filtered executions: 9
-ping_pong_benchmark Best Time: 736.280 ms
-ping_pong_benchmark Worst Time: 803.114 ms
-ping_pong_benchmark Median: 757.198 ms
-ping_pong_benchmark Arith. Mean Time: 760.732 ms
-ping_pong_benchmark Geo. Mean Time: 760.434 ms
-ping_pong_benchmark Harmonic Mean Time: 760.139 ms
-ping_pong_benchmark Std. Dev Time: 21.422 ms
-ping_pong_benchmark Lower Confidence: 746.737 ms
-ping_pong_benchmark Higher Confidence: 774.728 ms
-ping_pong_benchmark Error Window: 13.996 ms (1.840 percent)
-ping_pong_benchmark Coeff. of Variation: 0.028
-ping_pong_benchmark Skewness: 0.706
+   Total executions: 15
+   Filtered executions: 15
+ping_pong_benchmark Best Time: 378.807 ms
+ping_pong_benchmark Worst Time: 425.646 ms
+ping_pong_benchmark Median: 393.205 ms
+ping_pong_benchmark Arith. Mean Time: 393.003 ms
+ping_pong_benchmark Geo. Mean Time: 392.836 ms
+ping_pong_benchmark Harmonic Mean Time: 392.674 ms
+ping_pong_benchmark Std. Dev Time: 11.580 ms
+ping_pong_benchmark Lower Confidence: 387.142 ms
+ping_pong_benchmark Higher Confidence: 398.863 ms
+ping_pong_benchmark Error Window: 5.860 ms (1.491 percent)
+ping_pong_benchmark Coeff. of Variation: 0.029
+ping_pong_benchmark Skewness: 1.439
 ok
 
-================== SCALA/AKKA ======================
+======================== SCALA/AKKA ==============================
 Runtime: Java:21.0.4::Scala:2.11.12
 Benchmark: PingPongAkkaActorBenchmark
 Args: 
-            N (num pings) = 1000000    
+            N (num pings) = 500000     
                     debug = true       
 
              Java Version = 21.0.4     
@@ -56,37 +61,42 @@ Args:
                  O/S Name = Mac OS X   
                  O/S Arch = x86_64     
 
-Idle sampling started, writing to ./src/main/data/20250312165350_ping_pong_akka_actor_benchmark_idle_power.csv
-Benchmark sampling started, writing to ./src/main/data/20250312165406_ping_pong_akka_actor_benchmark_power_metrics.csv
+Idle sampling started, writing to ./src/main/data/20250315141333_ping_pong_akka_actor_benchmark_idle_power.csv
+Benchmark sampling started, writing to ./src/main/data/20250315141344_ping_pong_akka_actor_benchmark_power_metrics.csv
 
 Execution - Iterations: 
-PingPongAkkaActorBenchmark          Iteration-0:  1552.137 ms 
-PingPongAkkaActorBenchmark          Iteration-1:   802.128 ms 
-PingPongAkkaActorBenchmark          Iteration-2:   878.163 ms 
-PingPongAkkaActorBenchmark          Iteration-3:   829.246 ms 
-PingPongAkkaActorBenchmark          Iteration-4:   839.265 ms 
-PingPongAkkaActorBenchmark          Iteration-5:   855.702 ms 
-PingPongAkkaActorBenchmark          Iteration-6:   861.014 ms 
-PingPongAkkaActorBenchmark          Iteration-7:   864.593 ms 
-PingPongAkkaActorBenchmark          Iteration-8:   928.451 ms 
-PingPongAkkaActorBenchmark          Iteration-9:   952.559 ms 
+PingPongAkkaActorBenchmark          Iteration-0:  1009.402 ms 
+PingPongAkkaActorBenchmark          Iteration-1:   807.954 ms 
+PingPongAkkaActorBenchmark          Iteration-2:   698.446 ms 
+PingPongAkkaActorBenchmark          Iteration-3:   555.411 ms 
+PingPongAkkaActorBenchmark          Iteration-4:   597.240 ms 
+PingPongAkkaActorBenchmark          Iteration-5:   716.075 ms 
+PingPongAkkaActorBenchmark          Iteration-6:   665.796 ms 
+PingPongAkkaActorBenchmark          Iteration-7:   598.885 ms 
+PingPongAkkaActorBenchmark          Iteration-8:   687.761 ms 
+PingPongAkkaActorBenchmark          Iteration-9:   579.492 ms 
+PingPongAkkaActorBenchmark         Iteration-10:   621.497 ms 
+PingPongAkkaActorBenchmark         Iteration-11:   569.450 ms 
+PingPongAkkaActorBenchmark         Iteration-12:   553.995 ms 
+PingPongAkkaActorBenchmark         Iteration-13:   536.412 ms 
+PingPongAkkaActorBenchmark         Iteration-14:   815.853 ms 
 
 
 
-PowerMetrics stopped at 16:54:16.
+PowerMetrics stopped at 14:13:54.
 
 Execution - Summary: 
-         Total executions = 10         
-      Filtered executions = 9          
-PingPongAkkaActorBenchmark            Best Time:   802.128 ms 
-PingPongAkkaActorBenchmark           Worst Time:   952.559 ms 
-PingPongAkkaActorBenchmark               Median:   861.014 ms 
-PingPongAkkaActorBenchmark     Arith. Mean Time:   867.902 ms 
-PingPongAkkaActorBenchmark       Geo. Mean Time:   866.784 ms 
-PingPongAkkaActorBenchmark   Harmonic Mean Time:   865.685 ms 
-PingPongAkkaActorBenchmark        Std. Dev Time:    44.455 ms 
-PingPongAkkaActorBenchmark     Lower Confidence:   838.858 ms 
-PingPongAkkaActorBenchmark    Higher Confidence:   896.946 ms 
-PingPongAkkaActorBenchmark         Error Window:    29.044 ms (3.346 percent) 
-PingPongAkkaActorBenchmark  Coeff. of Variation:     0.051 
-PingPongAkkaActorBenchmark             Skewness:     0.657 
+         Total executions = 15         
+      Filtered executions = 12         
+PingPongAkkaActorBenchmark            Best Time:   536.412 ms 
+PingPongAkkaActorBenchmark           Worst Time:   716.075 ms 
+PingPongAkkaActorBenchmark               Median:   598.063 ms 
+PingPongAkkaActorBenchmark     Arith. Mean Time:   615.038 ms 
+PingPongAkkaActorBenchmark       Geo. Mean Time:   612.224 ms 
+PingPongAkkaActorBenchmark   Harmonic Mean Time:   609.481 ms 
+PingPongAkkaActorBenchmark        Std. Dev Time:    59.481 ms 
+PingPongAkkaActorBenchmark     Lower Confidence:   581.384 ms 
+PingPongAkkaActorBenchmark    Higher Confidence:   648.693 ms 
+PingPongAkkaActorBenchmark         Error Window:    33.654 ms (5.472 percent) 
+PingPongAkkaActorBenchmark  Coeff. of Variation:     0.097 
+PingPongAkkaActorBenchmark             Skewness:     0.455 

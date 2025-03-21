@@ -1,0 +1,131 @@
+=============================== ERLANG =====================================
+12> benchmark_runner:run(fibonacci_benchmark, 15).
+Runtime: Erlang/OTP:27
+Erlang Emulator Version: 15.1.2
+Benchmark: fibonacci_benchmark
+Config: 
+    N (index) = 25
+
+      O/S Version = 15.3.2
+         O/S Name = Mac OS X
+         O/S Arch = x86_64
+
+Idle sampling started, writing to "../../data/20250317112747_fibonacci_benchmark_idle_power.csv"
+Benchmark sampling started, writing to "../../data/20250317112759_fibonacci_benchmark_power_metrics.csv"
+
+Execution - Iterations:
+   Result = 75025
+fibonacci_benchmark          Iteration-1:   261.962 ms
+   Result = 75025
+fibonacci_benchmark          Iteration-2:   244.842 ms
+   Result = 75025
+fibonacci_benchmark          Iteration-3:   253.499 ms
+   Result = 75025
+fibonacci_benchmark          Iteration-4:   361.276 ms
+   Result = 75025
+fibonacci_benchmark          Iteration-5:   313.192 ms
+   Result = 75025
+fibonacci_benchmark          Iteration-6:   331.573 ms
+   Result = 75025
+fibonacci_benchmark          Iteration-7:   372.989 ms
+   Result = 75025
+fibonacci_benchmark          Iteration-8:   341.655 ms
+   Result = 75025
+fibonacci_benchmark          Iteration-9:   298.208 ms
+   Result = 75025
+fibonacci_benchmark          Iteration-10:   333.754 ms
+   Result = 75025
+fibonacci_benchmark          Iteration-11:   372.882 ms
+   Result = 75025
+fibonacci_benchmark          Iteration-12:   323.955 ms
+   Result = 75025
+fibonacci_benchmark          Iteration-13:   354.766 ms
+   Result = 75025
+fibonacci_benchmark          Iteration-14:   343.881 ms
+   Result = 75025
+fibonacci_benchmark          Iteration-15:   361.787 ms
+
+PowerMetrics stopped at "11:28:4".
+
+Execution - Summary: 
+   Total executions: 15
+   Filtered executions: 12
+fibonacci_benchmark Best Time: 298.208 ms
+fibonacci_benchmark Worst Time: 372.989 ms
+fibonacci_benchmark Median: 342.768 ms
+fibonacci_benchmark Arith. Mean Time: 342.493 ms
+fibonacci_benchmark Geo. Mean Time: 341.738 ms
+fibonacci_benchmark Harmonic Mean Time: 340.969 ms
+fibonacci_benchmark Std. Dev Time: 22.529 ms
+fibonacci_benchmark Lower Confidence: 329.746 ms
+fibonacci_benchmark Higher Confidence: 355.240 ms
+fibonacci_benchmark Error Window: 12.747 ms (3.722 percent)
+fibonacci_benchmark Coeff. of Variation: 0.066
+fibonacci_benchmark Skewness: -0.384
+ok
+=============================== SCALA/AKKA =================================
+Runtime: Java:21.0.4::Scala:2.11.12
+Benchmark: FibonacciAkkaActorBenchmark
+Args: 
+                N (index) = 25         
+                    debug = false      
+
+             Java Version = 21.0.4     
+              O/S Version = 15.3.2     
+                 O/S Name = Mac OS X   
+                 O/S Arch = x86_64     
+
+Idle sampling started, writing to ./src/main/data/20250317112950_fibonacci_akka_actor_benchmark_idle_power.csv
+Benchmark sampling started, writing to ./src/main/data/20250317113001_fibonacci_akka_actor_benchmark_power_metrics.csv
+
+Execution - Iterations: 
+ Result = 75025
+FibonacciAkkaActorBenchmark          Iteration-0:  2796.059 ms 
+ Result = 75025
+FibonacciAkkaActorBenchmark          Iteration-1:  1774.937 ms 
+ Result = 75025
+FibonacciAkkaActorBenchmark          Iteration-2:  1210.903 ms 
+ Result = 75025
+FibonacciAkkaActorBenchmark          Iteration-3:   764.470 ms 
+ Result = 75025
+FibonacciAkkaActorBenchmark          Iteration-4:   801.560 ms 
+ Result = 75025
+FibonacciAkkaActorBenchmark          Iteration-5:   930.982 ms 
+ Result = 75025
+FibonacciAkkaActorBenchmark          Iteration-6:   847.819 ms 
+ Result = 75025
+FibonacciAkkaActorBenchmark          Iteration-7:   812.259 ms 
+ Result = 75025
+FibonacciAkkaActorBenchmark          Iteration-8:   758.859 ms 
+ Result = 75025
+FibonacciAkkaActorBenchmark          Iteration-9:   903.781 ms 
+ Result = 75025
+FibonacciAkkaActorBenchmark         Iteration-10:   659.252 ms 
+ Result = 75025
+FibonacciAkkaActorBenchmark         Iteration-11:   711.237 ms 
+ Result = 75025
+FibonacciAkkaActorBenchmark         Iteration-12:   691.406 ms 
+ Result = 75025
+FibonacciAkkaActorBenchmark         Iteration-13:   745.161 ms 
+ Result = 75025
+FibonacciAkkaActorBenchmark         Iteration-14:   757.695 ms 
+
+
+
+PowerMetrics stopped at 11:30:17.
+
+Execution - Summary: 
+         Total executions = 15         
+      Filtered executions = 12         
+FibonacciAkkaActorBenchmark            Best Time:   659.252 ms 
+FibonacciAkkaActorBenchmark           Worst Time:   930.982 ms 
+FibonacciAkkaActorBenchmark               Median:   761.665 ms 
+FibonacciAkkaActorBenchmark     Arith. Mean Time:   782.040 ms 
+FibonacciAkkaActorBenchmark       Geo. Mean Time:   778.186 ms 
+FibonacciAkkaActorBenchmark   Harmonic Mean Time:   774.411 ms 
+FibonacciAkkaActorBenchmark        Std. Dev Time:    78.384 ms 
+FibonacciAkkaActorBenchmark     Lower Confidence:   737.690 ms 
+FibonacciAkkaActorBenchmark    Higher Confidence:   826.390 ms 
+FibonacciAkkaActorBenchmark         Error Window:    44.350 ms (5.671 percent) 
+FibonacciAkkaActorBenchmark  Coeff. of Variation:     0.100 
+FibonacciAkkaActorBenchmark             Skewness:     0.452 
