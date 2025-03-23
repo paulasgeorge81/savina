@@ -1,0 +1,104 @@
+============================== ERLANG =============================================
+15> benchmark_runner:run(thread_ring_benchmark, 15).
+Runtime: Erlang/OTP:27
+Erlang Emulator Version: 15.1.2
+Benchmark: thread_ring_benchmark
+Config: 
+    N (num actors) = 10000
+    R (num rounds) = 1000000
+
+      O/S Version = 15.3.2
+         O/S Name = Mac OS X
+         O/S Arch = x86_64
+
+Idle sampling started, writing to "../../data/20250322134546_thread_ring_benchmark_idle_power.csv"
+Benchmark sampling started, writing to "../../data/20250322134557_thread_ring_benchmark_power_metrics.csv"
+
+Execution - Iterations:
+thread_ring_benchmark          Iteration-1:   698.544 ms
+thread_ring_benchmark          Iteration-2:   757.384 ms
+thread_ring_benchmark          Iteration-3:   694.676 ms
+thread_ring_benchmark          Iteration-4:   714.046 ms
+thread_ring_benchmark          Iteration-5:   710.659 ms
+thread_ring_benchmark          Iteration-6:   705.507 ms
+thread_ring_benchmark          Iteration-7:   713.049 ms
+thread_ring_benchmark          Iteration-8:   694.603 ms
+thread_ring_benchmark          Iteration-9:   698.020 ms
+thread_ring_benchmark          Iteration-10:   736.976 ms
+thread_ring_benchmark          Iteration-11:   747.278 ms
+thread_ring_benchmark          Iteration-12:   716.726 ms
+thread_ring_benchmark          Iteration-13:   751.146 ms
+thread_ring_benchmark          Iteration-14:   705.073 ms
+thread_ring_benchmark          Iteration-15:   709.648 ms
+
+PowerMetrics stopped at "13:46:8".
+
+Execution - Summary: 
+   Total executions: 15
+   Filtered executions: 15
+thread_ring_benchmark Best Time: 694.603 ms
+thread_ring_benchmark Worst Time: 757.384 ms
+thread_ring_benchmark Median: 710.659 ms
+thread_ring_benchmark Arith. Mean Time: 716.889 ms
+thread_ring_benchmark Geo. Mean Time: 716.605 ms
+thread_ring_benchmark Harmonic Mean Time: 716.325 ms
+thread_ring_benchmark Std. Dev Time: 20.341 ms
+thread_ring_benchmark Lower Confidence: 706.595 ms
+thread_ring_benchmark Higher Confidence: 727.183 ms
+thread_ring_benchmark Error Window: 10.294 ms (1.436 percent)
+thread_ring_benchmark Coeff. of Variation: 0.028
+thread_ring_benchmark Skewness: 0.883
+ok
+
+============================== SCALA/AKKA =========================================
+Runtime: Java:21.0.4::Scala:2.11.12
+Benchmark: ThreadRingAkkaActorBenchmark
+Args: 
+           N (num actors) = 10000      
+           R (num rounds) = 1000000    
+                    debug = true       
+
+             Java Version = 21.0.4     
+              O/S Version = 15.3.2     
+                 O/S Name = Mac OS X   
+                 O/S Arch = x86_64     
+
+Idle sampling started, writing to ./src/main/data/20250322134149_thread_ring_akka_actor_benchmark_idle_power.csv
+Benchmark sampling started, writing to ./src/main/data/20250322134201_thread_ring_akka_actor_benchmark_power_metrics.csv
+
+Execution - Iterations: 
+ThreadRingAkkaActorBenchmark          Iteration-0:  1326.844 ms 
+ThreadRingAkkaActorBenchmark          Iteration-1:   664.613 ms 
+ThreadRingAkkaActorBenchmark          Iteration-2:   678.412 ms 
+ThreadRingAkkaActorBenchmark          Iteration-3:   760.483 ms 
+ThreadRingAkkaActorBenchmark          Iteration-4:   736.026 ms 
+ThreadRingAkkaActorBenchmark          Iteration-5:   612.990 ms 
+ThreadRingAkkaActorBenchmark          Iteration-6:   632.156 ms 
+ThreadRingAkkaActorBenchmark          Iteration-7:   448.185 ms 
+ThreadRingAkkaActorBenchmark          Iteration-8:   568.941 ms 
+ThreadRingAkkaActorBenchmark          Iteration-9:   634.903 ms 
+ThreadRingAkkaActorBenchmark         Iteration-10:   589.561 ms 
+ThreadRingAkkaActorBenchmark         Iteration-11:   679.535 ms 
+ThreadRingAkkaActorBenchmark         Iteration-12:   697.843 ms 
+ThreadRingAkkaActorBenchmark         Iteration-13:   483.767 ms 
+ThreadRingAkkaActorBenchmark         Iteration-14:   625.300 ms 
+
+
+
+PowerMetrics stopped at 13:42:11.
+
+Execution - Summary: 
+         Total executions = 15         
+      Filtered executions = 12         
+ThreadRingAkkaActorBenchmark            Best Time:   568.941 ms 
+ThreadRingAkkaActorBenchmark           Worst Time:   760.483 ms 
+ThreadRingAkkaActorBenchmark               Median:   649.758 ms 
+ThreadRingAkkaActorBenchmark     Arith. Mean Time:   656.730 ms 
+ThreadRingAkkaActorBenchmark       Geo. Mean Time:   654.471 ms 
+ThreadRingAkkaActorBenchmark   Harmonic Mean Time:   652.238 ms 
+ThreadRingAkkaActorBenchmark        Std. Dev Time:    54.768 ms 
+ThreadRingAkkaActorBenchmark     Lower Confidence:   625.742 ms 
+ThreadRingAkkaActorBenchmark    Higher Confidence:   687.718 ms 
+ThreadRingAkkaActorBenchmark         Error Window:    30.988 ms (4.719 percent) 
+ThreadRingAkkaActorBenchmark  Coeff. of Variation:     0.083 
+ThreadRingAkkaActorBenchmark             Skewness:     0.325 

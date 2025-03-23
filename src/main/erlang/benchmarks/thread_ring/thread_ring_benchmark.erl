@@ -1,11 +1,11 @@
 -module(thread_ring_benchmark).
--export([run/0, actor/3, print_config/0]).
--define(N, 100). % number of actors
--define(R, 100_000). % number of pings/no of rounds
+-export([run/0, actor/2, print_config/0]).
+-define(N, 10_000). % number of actors
+-define(R, 1_000_000). % number of pings/no of rounds
 
 run() -> 
     Main = self(),
-    Pids = [spawn(?MODULE, actor, [self(), undefined, Main]) || _ <- lists:seq(1, ?N)],
+    Pids = [spawn(?MODULE, actor, [undefined, Main]) || _ <- lists:seq(1, ?N)],
     setup_ring(Pids),
     hd(Pids) ! {ping, ?R},
     receive
@@ -14,31 +14,26 @@ run() ->
     end.
 
 setup_ring([H | T]) ->
-    setup_ring(H, T ++ [H]).
+    Last = lists:foldl(fun (Next, Prev) -> Prev ! {set_next, Next}, Next end, H, T),
+    Last ! {set_next, H}.  % Completing the ring by linking the last actor to the first
 
-setup_ring(_, []) ->
-    ok;
-setup_ring(Current, [Next | Rest]) ->
-    Current ! {set_next, Next},
-    setup_ring(Next, Rest).
-
-actor(Self, Next, Main) ->
+actor(Next, Main) ->
     receive
         {set_next, NewNext} ->
-            actor(Self, NewNext, Main);
+            actor(NewNext, Main);
         {ping, PingsLeft} when PingsLeft > 0 ->
             Next ! {ping, PingsLeft - 1},
-            actor(Self, Next, Main);
+            actor(Next, Main);
         {ping, 0} ->
-            Next ! {exit, Self},  %% Send exit message with the first actor's PID
-            actor(Self, Next, Main);
-        {exit, Original} when Self =:= Original -> %% Terminate when exit message loops back
+            Next ! {exit, self()},  %% Send exit message with the first actor's PID
+            actor(Next, Main);
+        {exit, Original} when self() =:= Original -> %% Terminate when exit message loops back
             Main ! done;
         {exit, Original} ->
             Next ! {exit, Original},
             ok
     end.
-    
+
 
 print_config() ->
     io:format("    N (num actors) = ~p~n",[?N]),
