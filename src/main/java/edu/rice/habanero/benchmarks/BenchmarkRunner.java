@@ -132,53 +132,72 @@ public class BenchmarkRunner {
 
 
     private static String logIdlePower(String Benchmark) {
-        String IdleLogFile = generateLogFilename(Benchmark+"_idle_power");
+        String IdleLogFile = Benchmark+"idle_power.log";
         System.out.println("Idle sampling started, writing to " + IdleLogFile);
-        String PowerMetricsCmd = 
-        "sudo powermetrics --samplers cpu_power,thermal,smc -n 10 -i 500 -a 0 "
-        +"--hide-cpu-duty-cycle --show-extra-power-info | "
-        +"awk 'BEGIN {core_power=\"N/A\"; gt_power=\"N/A\"; dram_power=\"N/A\"; cpu_gt_sa_power=\"N/A\"; cores_active=\"N/A\"; avg_cores_active=\"N/A\"; temp=\"N/A\"; timestamp=\"N/A\"; pressure=\"N/A\"; logfile=\"" + IdleLogFile + "\"; "
-        +"if (system(\"test -s \" logfile) != 0) print \"Timestamp,CPU Core Power(W),GT Power(W),DRAM Power(W),(CPUs+GT+SA) Power(W),Avg Num Cores Active,Cores Active(%),CPU Temp(C),Pressure Level\" > logfile} "
-        +"/\\*\\*\\* Sampled system activity/ {timestamp=$5 \" \" $6 \" \" $7 \" \" $8 \" \" $9 \" \" $10 \" \" $11 \" \" $12} "
-        +"/Intel energy model derived package power/ {cpu_gt_sa_power=$NF; gsub(/W/, \"\", cpu_gt_sa_power)} "
-        +"/Intel energy model derived CPU core power/ {core_power=$NF; gsub(/W/, \"\", core_power)} "
-        +"/Intel energy model derived GT power/ {gt_power=$NF; gsub(/W/, \"\", gt_power)} "
-        +"/Intel energy model derived DRAM power/ {dram_power=$NF; gsub(/W/, \"\", dram_power)} "
-        +"/Avg Num of Cores Active/ {avg_cores_active=$NF} "
-        +"/^(Cores Active:)/ {cores_active=$NF; gsub(/%/, \"\", cores_active)} "
-        +"/Current pressure level/ {pressure=$NF} "
-        +"/CPU die temperature/ {sub(/.*: /, \"\", $0); temp=$0; "
-        +"print timestamp \",\" core_power \",\" gt_power \",\" dram_power \",\" cpu_gt_sa_power \",\" avg_cores_active \",\" cores_active \",\" temp \",\" pressure >> logfile; "
-        +"core_power=\"N/A\"; gt_power=\"N/A\"; dram_power=\"N/A\"; cpu_gt_sa_power=\"N/A\"; cores_active=\"N/A\"; avg_cores_active=\"N/A\"; temp=\"N/A\"; timestamp=\"N/A\"; pressure=\"N/A\"}'";
+        String PowerMetricsCmd = "sudo powermetrics --samplers cpu_power,thermal,smc,tasks,gpu_power,gpu_dcc_stats,gpu_agpm_stats -n 10 -i 500 -a 0 --show-process-coalition --show-process-energy --show-process-gpu --hide-cpu-duty-cycle --show-extra-power-info > " + IdleLogFile + " 2>&1";
+  
         executeCommand(PowerMetricsCmd);
         try { Thread.sleep(6000); } catch (InterruptedException e) { e.printStackTrace(); }
         return IdleLogFile;
     }
+    // private static String logIdlePower(String Benchmark) {
+    //     String IdleLogFile = generateLogFilename(Benchmark+"_idle_power");
+    //     System.out.println("Idle sampling started, writing to " + IdleLogFile);
+    //     String PowerMetricsCmd = 
+    //     "sudo powermetrics --samplers cpu_power,thermal,smc -n 10 -i 500 -a 0 "
+    //     +"--hide-cpu-duty-cycle --show-extra-power-info | "
+    //     +"awk 'BEGIN {core_power=\"N/A\"; gt_power=\"N/A\"; dram_power=\"N/A\"; cpu_gt_sa_power=\"N/A\"; cores_active=\"N/A\"; avg_cores_active=\"N/A\"; temp=\"N/A\"; timestamp=\"N/A\"; pressure=\"N/A\"; logfile=\"" + IdleLogFile + "\"; "
+    //     +"if (system(\"test -s \" logfile) != 0) print \"Timestamp,CPU Core Power(W),GT Power(W),DRAM Power(W),(CPUs+GT+SA) Power(W),Avg Num Cores Active,Cores Active(%),CPU Temp(C),Pressure Level\" > logfile} "
+    //     +"/\\*\\*\\* Sampled system activity/ {timestamp=$5 \" \" $6 \" \" $7 \" \" $8 \" \" $9 \" \" $10 \" \" $11 \" \" $12} "
+    //     +"/Intel energy model derived package power/ {cpu_gt_sa_power=$NF; gsub(/W/, \"\", cpu_gt_sa_power)} "
+    //     +"/Intel energy model derived CPU core power/ {core_power=$NF; gsub(/W/, \"\", core_power)} "
+    //     +"/Intel energy model derived GT power/ {gt_power=$NF; gsub(/W/, \"\", gt_power)} "
+    //     +"/Intel energy model derived DRAM power/ {dram_power=$NF; gsub(/W/, \"\", dram_power)} "
+    //     +"/Avg Num of Cores Active/ {avg_cores_active=$NF} "
+    //     +"/^(Cores Active:)/ {cores_active=$NF; gsub(/%/, \"\", cores_active)} "
+    //     +"/Current pressure level/ {pressure=$NF} "
+    //     +"/CPU die temperature/ {sub(/.*: /, \"\", $0); temp=$0; "
+    //     +"print timestamp \",\" core_power \",\" gt_power \",\" dram_power \",\" cpu_gt_sa_power \",\" avg_cores_active \",\" cores_active \",\" temp \",\" pressure >> logfile; "
+    //     +"core_power=\"N/A\"; gt_power=\"N/A\"; dram_power=\"N/A\"; cpu_gt_sa_power=\"N/A\"; cores_active=\"N/A\"; avg_cores_active=\"N/A\"; temp=\"N/A\"; timestamp=\"N/A\"; pressure=\"N/A\"}'";
+    //     executeCommand(PowerMetricsCmd);
+    //     try { Thread.sleep(6000); } catch (InterruptedException e) { e.printStackTrace(); }
+    //     return IdleLogFile;
+    // }
 
-
+    
     private static String startPowerMetrics(String Benchmark) {
-        String BenchmarkLogFile = generateLogFilename(Benchmark+"_power_metrics");
+        String BenchmarkLogFile = Benchmark+"_power_metrics.log";
         System.out.println("Benchmark sampling started, writing to " + BenchmarkLogFile+ "\n");
-        String PowerMetricsCmd = 
-        "sudo powermetrics --samplers cpu_power,thermal,smc -i 1000 -a 0 "
-        +"--hide-cpu-duty-cycle --show-extra-power-info | "
-        +"awk 'BEGIN {core_power=\"N/A\"; gt_power=\"N/A\"; dram_power=\"N/A\"; cpu_gt_sa_power=\"N/A\"; cores_active=\"N/A\"; avg_cores_active=\"N/A\"; temp=\"N/A\"; timestamp=\"N/A\"; pressure=\"N/A\"; logfile=\"" + BenchmarkLogFile + "\"; "
-        +"if (system(\"test -s \" logfile) != 0) print \"Timestamp,CPU Core Power(W),GT Power(W),DRAM Power(W),(CPUs+GT+SA) Power(W),Avg Num Cores Active,Cores Active(%),CPU Temp(C),Pressure Level\" > logfile} "
-        +"/\\*\\*\\* Sampled system activity/ {timestamp=$5 \" \" $6 \" \" $7 \" \" $8 \" \" $9 \" \" $10 \" \" $11 \" \" $12} "
-        +"/Intel energy model derived package power/ {cpu_gt_sa_power=$NF; gsub(/W/, \"\", cpu_gt_sa_power)} "
-        +"/Intel energy model derived CPU core power/ {core_power=$NF; gsub(/W/, \"\", core_power)} "
-        +"/Intel energy model derived GT power/ {gt_power=$NF; gsub(/W/, \"\", gt_power)} "
-        +"/Intel energy model derived DRAM power/ {dram_power=$NF; gsub(/W/, \"\", dram_power)} "
-        +"/Avg Num of Cores Active/ {avg_cores_active=$NF} "
-        +"/^(Cores Active:)/ {cores_active=$NF; gsub(/%/, \"\", cores_active)} "
-        +"/Current pressure level/ {pressure=$NF} "
-        +"/CPU die temperature/ {sub(/.*: /, \"\", $0); temp=$0; "
-        +"print timestamp \",\" core_power \",\" gt_power \",\" dram_power \",\" cpu_gt_sa_power \",\" avg_cores_active \",\" cores_active \",\" temp \",\" pressure >> logfile; "
-        +"core_power=\"N/A\"; gt_power=\"N/A\"; dram_power=\"N/A\"; cpu_gt_sa_power=\"N/A\"; cores_active=\"N/A\"; avg_cores_active=\"N/A\"; temp=\"N/A\"; timestamp=\"N/A\"; pressure=\"N/A\"}' &";
+        String PowerMetricsCmd = "sudo powermetrics --samplers cpu_power,thermal,smc,tasks,gpu_power,gpu_dcc_stats,gpu_agpm_stats -i 1000 -a 0 --show-process-coalition --show-process-energy --show-process-gpu --hide-cpu-duty-cycle --show-extra-power-info > " 
+        + BenchmarkLogFile + " 2>&1 & echo $!";
         executeCommand(PowerMetricsCmd);
         // try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
         return BenchmarkLogFile;
     }
+
+    // private static String startPowerMetrics(String Benchmark) {
+    //     String BenchmarkLogFile = generateLogFilename(Benchmark+"_power_metrics");
+    //     System.out.println("Benchmark sampling started, writing to " + BenchmarkLogFile+ "\n");
+    //     String PowerMetricsCmd = 
+    //     "sudo powermetrics --samplers cpu_power,thermal,smc -i 100 -a 0 "
+    //     +"--hide-cpu-duty-cycle --show-extra-power-info | "
+    //     +"awk 'BEGIN {core_power=\"N/A\"; gt_power=\"N/A\"; dram_power=\"N/A\"; cpu_gt_sa_power=\"N/A\"; cores_active=\"N/A\"; avg_cores_active=\"N/A\"; temp=\"N/A\"; timestamp=\"N/A\"; pressure=\"N/A\"; logfile=\"" + BenchmarkLogFile + "\"; "
+    //     +"if (system(\"test -s \" logfile) != 0) print \"Timestamp,CPU Core Power(W),GT Power(W),DRAM Power(W),(CPUs+GT+SA) Power(W),Avg Num Cores Active,Cores Active(%),CPU Temp(C),Pressure Level\" > logfile} "
+    //     +"/\\*\\*\\* Sampled system activity/ {timestamp=$5 \" \" $6 \" \" $7 \" \" $8 \" \" $9 \" \" $10 \" \" $11 \" \" $12} "
+    //     +"/Intel energy model derived package power/ {cpu_gt_sa_power=$NF; gsub(/W/, \"\", cpu_gt_sa_power)} "
+    //     +"/Intel energy model derived CPU core power/ {core_power=$NF; gsub(/W/, \"\", core_power)} "
+    //     +"/Intel energy model derived GT power/ {gt_power=$NF; gsub(/W/, \"\", gt_power)} "
+    //     +"/Intel energy model derived DRAM power/ {dram_power=$NF; gsub(/W/, \"\", dram_power)} "
+    //     +"/Avg Num of Cores Active/ {avg_cores_active=$NF} "
+    //     +"/^(Cores Active:)/ {cores_active=$NF; gsub(/%/, \"\", cores_active)} "
+    //     +"/Current pressure level/ {pressure=$NF} "
+    //     +"/CPU die temperature/ {sub(/.*: /, \"\", $0); temp=$0; "
+    //     +"print timestamp \",\" core_power \",\" gt_power \",\" dram_power \",\" cpu_gt_sa_power \",\" avg_cores_active \",\" cores_active \",\" temp \",\" pressure >> logfile; "
+    //     +"core_power=\"N/A\"; gt_power=\"N/A\"; dram_power=\"N/A\"; cpu_gt_sa_power=\"N/A\"; cores_active=\"N/A\"; avg_cores_active=\"N/A\"; temp=\"N/A\"; timestamp=\"N/A\"; pressure=\"N/A\"}' &";
+    //     executeCommand(PowerMetricsCmd);
+    //     // try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
+    //     return BenchmarkLogFile;
+    // }
    
 
    

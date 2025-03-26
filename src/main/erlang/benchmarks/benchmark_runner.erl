@@ -80,68 +80,53 @@ run(BenchmarkModule, NumIterations) ->
         io:format("~s Coeff. of Variation: ~.3f~n", [BenchmarkModule, CoeffVar]),
         io:format("~s Skewness: ~.3f~n", [BenchmarkModule, Skew]).
 
+
 log_idle_power(BenchmarkModule) ->
-    IdleLogFile = atom_to_list(BenchmarkModule)++"_idle_power.log",
-    PowerMetricsCmd = "sudo powermetrics --samplers cpu_power,thermal,smc,tasks,gpu_power,gpu_dcc_stats,gpu_agpm_stats -n 10 -i 500 -a 0 --show-process-coalition --show-process-energy --show-process-gpu --hide-cpu-duty-cycle --show-extra-power-info > " ++ IdleLogFile ++ " 2>&1", 
+    IdleLogFile = generate_log_filename(atom_to_list(BenchmarkModule)++"_idle_power"),
+    io:format("Idle sampling started, writing to ~p~n", [IdleLogFile]),
+    PowerMetricsCmd = 
+        "sudo powermetrics --samplers cpu_power,thermal,smc -n 10 -i 500 -a 0 "
+        "--hide-cpu-duty-cycle --show-extra-power-info | "
+        "awk 'BEGIN {core_power=\"N/A\"; gt_power=\"N/A\"; dram_power=\"N/A\"; cpu_gt_sa_power=\"N/A\"; cores_active=\"N/A\"; avg_cores_active=\"N/A\"; temp=\"N/A\"; timestamp=\"N/A\"; pressure=\"N/A\"; logfile=\"" ++ IdleLogFile ++ "\"; "
+        "if (system(\"test -s \" logfile) != 0) print \"Timestamp,CPU Core Power(W),GT Power(W),DRAM Power(W),(CPUs+GT+SA) Power(W),Avg Num Cores Active,Cores Active(%),CPU Temp(C),Pressure Level\" > logfile} "
+        "/\\*\\*\\* Sampled system activity/ {timestamp=$5 \" \" $6 \" \" $7 \" \" $8 \" \" $9 \" \" $10 \" \" $11 \" \" $12} "
+        "/Intel energy model derived package power/ {cpu_gt_sa_power=$NF; gsub(/W/, \"\", cpu_gt_sa_power)} "
+        "/Intel energy model derived CPU core power/ {core_power=$NF; gsub(/W/, \"\", core_power)} "
+        "/Intel energy model derived GT power/ {gt_power=$NF; gsub(/W/, \"\", gt_power)} "
+        "/Intel energy model derived DRAM power/ {dram_power=$NF; gsub(/W/, \"\", dram_power)} "
+        "/Avg Num of Cores Active/ {avg_cores_active=$NF} "
+        "/^(Cores Active:)/ {cores_active=$NF; gsub(/%/, \"\", cores_active)} "
+        "/Current pressure level/ {pressure=$NF} "
+        "/CPU die temperature/ {sub(/.*: /, \"\", $0); temp=$0; "
+        "print timestamp \",\" core_power \",\" gt_power \",\" dram_power \",\" cpu_gt_sa_power \",\" avg_cores_active \",\" cores_active \",\" temp \",\" pressure >> logfile; "
+        "core_power=\"N/A\"; gt_power=\"N/A\"; dram_power=\"N/A\"; cpu_gt_sa_power=\"N/A\"; cores_active=\"N/A\"; avg_cores_active=\"N/A\"; temp=\"N/A\"; timestamp=\"N/A\"; pressure=\"N/A\"}'",
     os:cmd(PowerMetricsCmd),
     timer:sleep(6000),
     IdleLogFile.
 
-% log_idle_power(BenchmarkModule) ->
-%     IdleLogFile = generate_log_filename(atom_to_list(BenchmarkModule)++"_idle_power"),
-%     io:format("Idle sampling started, writing to ~p~n", [IdleLogFile]),
-%     PowerMetricsCmd = 
-%         "sudo powermetrics --samplers cpu_power,thermal,smc -n 10 -i 500 -a 0 "
-%         "--hide-cpu-duty-cycle --show-extra-power-info | "
-%         "awk 'BEGIN {core_power=\"N/A\"; gt_power=\"N/A\"; dram_power=\"N/A\"; cpu_gt_sa_power=\"N/A\"; cores_active=\"N/A\"; avg_cores_active=\"N/A\"; temp=\"N/A\"; timestamp=\"N/A\"; pressure=\"N/A\"; logfile=\"" ++ IdleLogFile ++ "\"; "
-%         "if (system(\"test -s \" logfile) != 0) print \"Timestamp,CPU Core Power(W),GT Power(W),DRAM Power(W),(CPUs+GT+SA) Power(W),Avg Num Cores Active,Cores Active(%),CPU Temp(C),Pressure Level\" > logfile} "
-%         "/\\*\\*\\* Sampled system activity/ {timestamp=$5 \" \" $6 \" \" $7 \" \" $8 \" \" $9 \" \" $10 \" \" $11 \" \" $12} "
-%         "/Intel energy model derived package power/ {cpu_gt_sa_power=$NF; gsub(/W/, \"\", cpu_gt_sa_power)} "
-%         "/Intel energy model derived CPU core power/ {core_power=$NF; gsub(/W/, \"\", core_power)} "
-%         "/Intel energy model derived GT power/ {gt_power=$NF; gsub(/W/, \"\", gt_power)} "
-%         "/Intel energy model derived DRAM power/ {dram_power=$NF; gsub(/W/, \"\", dram_power)} "
-%         "/Avg Num of Cores Active/ {avg_cores_active=$NF} "
-%         "/^(Cores Active:)/ {cores_active=$NF; gsub(/%/, \"\", cores_active)} "
-%         "/Current pressure level/ {pressure=$NF} "
-%         "/CPU die temperature/ {sub(/.*: /, \"\", $0); temp=$0; "
-%         "print timestamp \",\" core_power \",\" gt_power \",\" dram_power \",\" cpu_gt_sa_power \",\" avg_cores_active \",\" cores_active \",\" temp \",\" pressure >> logfile; "
-%         "core_power=\"N/A\"; gt_power=\"N/A\"; dram_power=\"N/A\"; cpu_gt_sa_power=\"N/A\"; cores_active=\"N/A\"; avg_cores_active=\"N/A\"; temp=\"N/A\"; timestamp=\"N/A\"; pressure=\"N/A\"}'",
-%     os:cmd(PowerMetricsCmd),
-%     timer:sleep(6000),
-%     IdleLogFile.
-
 start_power_metrics(BenchmarkModule) ->
-    BenchmarkLogFile = atom_to_list(BenchmarkModule)++"_power_metrics.log",
-    PowerMetricsCmd = "sudo powermetrics --samplers cpu_power,thermal,smc,tasks,gpu_power,gpu_dcc_stats,gpu_agpm_stats -i 1000 -a 0 --show-process-coalition --show-process-energy --show-process-gpu --hide-cpu-duty-cycle --show-extra-power-info > " 
-                        ++ BenchmarkLogFile ++ " 2>&1 & echo $!",
-    os:cmd(PowerMetricsCmd),
-    BenchmarkLogFile.
-    
-    
-% start_power_metrics(BenchmarkModule) ->
-%     BenchmarkLogFile = generate_log_filename(atom_to_list(BenchmarkModule)++"_power_metrics"),
-%     io:format("Benchmark sampling started, writing to ~p~n~n", [BenchmarkLogFile]),
-%     PowerMetricsCmd = 
-%         "sudo powermetrics --samplers cpu_power,thermal,smc -i 1000 -a 0 "
-%         "--hide-cpu-duty-cycle --show-extra-power-info | "
-%         "awk 'BEGIN {core_power=\"N/A\"; gt_power=\"N/A\"; dram_power=\"N/A\"; cpu_gt_sa_power=\"N/A\"; cores_active=\"N/A\"; avg_cores_active=\"N/A\"; temp=\"N/A\"; timestamp=\"N/A\"; pressure=\"N/A\"; logfile=\"" ++ BenchmarkLogFile ++ "\"; "
-%         "if (system(\"test -s \" logfile) != 0) print \"Timestamp,CPU Core Power(W),GT Power(W),DRAM Power(W),(CPUs+GT+SA) Power(W),Avg Num Cores Active,Cores Active(%),CPU Temp(C),Pressure Level\" > logfile} "
-%         "/\\*\\*\\* Sampled system activity/ {timestamp=$5 \" \" $6 \" \" $7 \" \" $8 \" \" $9 \" \" $10 \" \" $11 \" \" $12} "
-%         "/Intel energy model derived package power/ {cpu_gt_sa_power=$NF; gsub(/W/, \"\", cpu_gt_sa_power)} "
-%         "/Intel energy model derived CPU core power/ {core_power=$NF; gsub(/W/, \"\", core_power)} "
-%         "/Intel energy model derived GT power/ {gt_power=$NF; gsub(/W/, \"\", gt_power)} "
-%         "/Intel energy model derived DRAM power/ {dram_power=$NF; gsub(/W/, \"\", dram_power)} "
-%         "/Avg Num of Cores Active/ {avg_cores_active=$NF} "
-%         "/^(Cores Active:)/ {cores_active=$NF; gsub(/%/, \"\", cores_active)} "
-%         "/Current pressure level/ {pressure=$NF} "
-%         "/CPU die temperature/ {sub(/.*: /, \"\", $0); temp=$0; "
-%         "print timestamp \",\" core_power \",\" gt_power \",\" dram_power \",\" cpu_gt_sa_power \",\" avg_cores_active \",\" cores_active \",\" temp \",\" pressure >> logfile; "
-%         "core_power=\"N/A\"; gt_power=\"N/A\"; dram_power=\"N/A\"; cpu_gt_sa_power=\"N/A\"; cores_active=\"N/A\"; avg_cores_active=\"N/A\"; temp=\"N/A\"; timestamp=\"N/A\"; pressure=\"N/A\"}' &",
+    BenchmarkLogFile = generate_log_filename(atom_to_list(BenchmarkModule)++"_power_metrics"),
+    io:format("Benchmark sampling started, writing to ~p~n~n", [BenchmarkLogFile]),
+    PowerMetricsCmd = 
+        "sudo powermetrics --samplers cpu_power,thermal,smc -i 100 -a 0 "
+        "--hide-cpu-duty-cycle --show-extra-power-info | "
+        "awk 'BEGIN {core_power=\"N/A\"; gt_power=\"N/A\"; dram_power=\"N/A\"; cpu_gt_sa_power=\"N/A\"; cores_active=\"N/A\"; avg_cores_active=\"N/A\"; temp=\"N/A\"; timestamp=\"N/A\"; pressure=\"N/A\"; logfile=\"" ++ BenchmarkLogFile ++ "\"; "
+        "if (system(\"test -s \" logfile) != 0) print \"Timestamp,CPU Core Power(W),GT Power(W),DRAM Power(W),(CPUs+GT+SA) Power(W),Avg Num Cores Active,Cores Active(%),CPU Temp(C),Pressure Level\" > logfile} "
+        "/\\*\\*\\* Sampled system activity/ {timestamp=$5 \" \" $6 \" \" $7 \" \" $8 \" \" $9 \" \" $10 \" \" $11 \" \" $12} "
+        "/Intel energy model derived package power/ {cpu_gt_sa_power=$NF; gsub(/W/, \"\", cpu_gt_sa_power)} "
+        "/Intel energy model derived CPU core power/ {core_power=$NF; gsub(/W/, \"\", core_power)} "
+        "/Intel energy model derived GT power/ {gt_power=$NF; gsub(/W/, \"\", gt_power)} "
+        "/Intel energy model derived DRAM power/ {dram_power=$NF; gsub(/W/, \"\", dram_power)} "
+        "/Avg Num of Cores Active/ {avg_cores_active=$NF} "
+        "/^(Cores Active:)/ {cores_active=$NF; gsub(/%/, \"\", cores_active)} "
+        "/Current pressure level/ {pressure=$NF} "
+        "/CPU die temperature/ {sub(/.*: /, \"\", $0); temp=$0; "
+        "print timestamp \",\" core_power \",\" gt_power \",\" dram_power \",\" cpu_gt_sa_power \",\" avg_cores_active \",\" cores_active \",\" temp \",\" pressure >> logfile; "
+        "core_power=\"N/A\"; gt_power=\"N/A\"; dram_power=\"N/A\"; cpu_gt_sa_power=\"N/A\"; cores_active=\"N/A\"; avg_cores_active=\"N/A\"; temp=\"N/A\"; timestamp=\"N/A\"; pressure=\"N/A\"}' &",
                 
-%     os:cmd(PowerMetricsCmd),
-%     % timer:sleep(2000),  
-%     BenchmarkLogFile.
-    
+    os:cmd(PowerMetricsCmd),
+    % timer:sleep(2000),  
+    BenchmarkLogFile.
 
 stop_power_metrics() ->
     os:cmd("sudo pkill -2 powermetrics"),

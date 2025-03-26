@@ -1,6 +1,6 @@
 -module(ping_pong_benchmark).
 -export([run/0, ping/3, pong/0,print_config/0]).
--define(NUMMSG, 2_000_000_000).
+-define(NUMMSG, 100_000).
 
 run() ->
     Main = self(),
