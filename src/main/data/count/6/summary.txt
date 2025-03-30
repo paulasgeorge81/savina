@@ -1,0 +1,58 @@
+============================== ERLANG =============================================
+Erlang/OTP 27 [erts-15.1.2] [source] [64-bit] [smp:8:8] [ds:8:8:10] [async-threads:1] [dtrace]
+
+Runtime: Erlang/OTP:27
+Erlang Emulator Version: 15.1.2
+Benchmark: counting_benchmark
+Config: 
+    N (num messages) = 500000000
+
+Eshell V15.1.2 (press Ctrl+G to abort, type help(). for help)
+      O/S Version = 15.3.2
+         O/S Name = Mac OS X
+         O/S Arch = x86_64
+
+Idle sampling started, writing to "../../data/20250329103219_counting_benchmark_idle_power.csv"
+Benchmark sampling started, writing to "../../data/20250329103230_counting_benchmark_power_metrics.csv"
+
+Execution - Iterations:
+SUCCESS! received: 500000000
+counting_benchmark          Iteration-1:   67720.264 ms
+SUCCESS! received: 500000000
+counting_benchmark          Iteration-2:   71373.501 ms
+SUCCESS! received: 500000000
+counting_benchmark          Iteration-3:   70671.445 ms
+SUCCESS! received: 500000000
+counting_benchmark          Iteration-4:   67375.618 ms
+SUCCESS! received: 500000000
+counting_benchmark          Iteration-5:   71180.078 ms
+SUCCESS! received: 500000000
+counting_benchmark          Iteration-6:   69462.374 ms
+SUCCESS! received: 500000000
+counting_benchmark          Iteration-7:   72414.792 ms
+SUCCESS! received: 500000000
+counting_benchmark          Iteration-8:   72896.342 ms
+SUCCESS! received: 500000000
+counting_benchmark          Iteration-9:   73334.902 ms
+SUCCESS! received: 500000000
+counting_benchmark          Iteration-10:   69090.129 ms
+
+PowerMetrics stopped at "10:44:16".
+
+Execution - Summary: 
+   Total executions: 10
+   Filtered executions: 10
+counting_benchmark Best Time: 67375.618 ms
+counting_benchmark Worst Time: 73334.902 ms
+counting_benchmark Median: 70925.761 ms
+counting_benchmark Arith. Mean Time: 70551.945 ms
+counting_benchmark Geo. Mean Time: 70524.014 ms
+counting_benchmark Harmonic Mean Time: 70495.959 ms
+counting_benchmark Std. Dev Time: 1980.570 ms
+counting_benchmark Lower Confidence: 69324.375 ms
+counting_benchmark Higher Confidence: 71779.514 ms
+counting_benchmark Error Window: 1227.570 ms (1.740 percent)
+counting_benchmark Coeff. of Variation: 0.028
+counting_benchmark Skewness: -0.250
+
+============================== SCALA/AKKA =========================================

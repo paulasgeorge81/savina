@@ -1,0 +1,113 @@
+============================== ERLANG =============================================
+Erlang/OTP 27 [erts-15.1.2] [source] [64-bit] [smp:8:8] [ds:8:8:10] [async-threads:1] [dtrace]
+
+Runtime: Erlang/OTP:27
+Erlang Emulator Version: 15.1.2
+Benchmark: counting_benchmark
+Config: 
+Eshell V15.1.2 (press Ctrl+G to abort, type help(). for help)
+    N (num messages) = 5000000
+
+      O/S Version = 15.3.2
+         O/S Name = Mac OS X
+         O/S Arch = x86_64
+
+Idle sampling started, writing to "../../data/20250329091754_counting_benchmark_idle_power.csv"
+Benchmark sampling started, writing to "../../data/20250329091806_counting_benchmark_power_metrics.csv"
+
+Execution - Iterations:
+SUCCESS! received: 5000000
+counting_benchmark          Iteration-1:   711.627 ms
+SUCCESS! received: 5000000
+counting_benchmark          Iteration-2:   726.799 ms
+SUCCESS! received: 5000000
+counting_benchmark          Iteration-3:   706.609 ms
+SUCCESS! received: 5000000
+counting_benchmark          Iteration-4:   715.064 ms
+SUCCESS! received: 5000000
+counting_benchmark          Iteration-5:   698.647 ms
+SUCCESS! received: 5000000
+counting_benchmark          Iteration-6:   693.335 ms
+SUCCESS! received: 5000000
+counting_benchmark          Iteration-7:   698.731 ms
+SUCCESS! received: 5000000
+counting_benchmark          Iteration-8:   686.695 ms
+SUCCESS! received: 5000000
+counting_benchmark          Iteration-9:   681.347 ms
+SUCCESS! received: 5000000
+counting_benchmark          Iteration-10:   682.091 ms
+
+PowerMetrics stopped at "9:18:13".
+
+Execution - Summary: 
+   Total executions: 10
+   Filtered executions: 10
+counting_benchmark Best Time: 681.347 ms
+counting_benchmark Worst Time: 726.799 ms
+counting_benchmark Median: 698.689 ms
+counting_benchmark Arith. Mean Time: 700.095 ms
+counting_benchmark Geo. Mean Time: 699.951 ms
+counting_benchmark Harmonic Mean Time: 699.808 ms
+counting_benchmark Std. Dev Time: 14.204 ms
+counting_benchmark Lower Confidence: 691.291 ms
+counting_benchmark Higher Confidence: 708.898 ms
+counting_benchmark Error Window: 8.804 ms (1.257 percent)
+counting_benchmark Coeff. of Variation: 0.020
+counting_benchmark Skewness: 0.351
+
+============================== SCALA/AKKA =========================================
+Runtime: Java:21.0.4::Scala:2.11.12
+Benchmark: CountingAkkaActorBenchmark
+Args: 
+         N (num messages) = 5000000    
+                    debug = false      
+
+             Java Version = 21.0.4     
+              O/S Version = 15.3.2     
+                 O/S Name = Mac OS X   
+                 O/S Arch = x86_64     
+
+Idle sampling started, writing to ./src/main/data/20250329091914_counting_akka_actor_benchmark_idle_power.csv
+Benchmark sampling started, writing to ./src/main/data/20250329091925_counting_akka_actor_benchmark_power_metrics.csv
+
+Execution - Iterations: 
+SUCCESS! received: 5000000
+CountingAkkaActorBenchmark          Iteration-0:  2076.688 ms 
+SUCCESS! received: 5000000
+CountingAkkaActorBenchmark          Iteration-1:  1592.546 ms 
+SUCCESS! received: 5000000
+CountingAkkaActorBenchmark          Iteration-2:  1096.044 ms 
+SUCCESS! received: 5000000
+CountingAkkaActorBenchmark          Iteration-3:   986.856 ms 
+SUCCESS! received: 5000000
+CountingAkkaActorBenchmark          Iteration-4:   904.315 ms 
+SUCCESS! received: 5000000
+CountingAkkaActorBenchmark          Iteration-5:  1002.554 ms 
+SUCCESS! received: 5000000
+CountingAkkaActorBenchmark          Iteration-6:  1036.698 ms 
+SUCCESS! received: 5000000
+CountingAkkaActorBenchmark          Iteration-7:  1419.752 ms 
+SUCCESS! received: 5000000
+CountingAkkaActorBenchmark          Iteration-8:   953.739 ms 
+SUCCESS! received: 5000000
+CountingAkkaActorBenchmark          Iteration-9:   969.325 ms 
+
+
+
+PowerMetrics stopped at 09:19:37.
+
+Execution - Summary: 
+         Total executions = 10         
+      Filtered executions = 7          
+CountingAkkaActorBenchmark            Best Time:   904.315 ms 
+CountingAkkaActorBenchmark           Worst Time:  1096.044 ms 
+CountingAkkaActorBenchmark               Median:   986.856 ms 
+CountingAkkaActorBenchmark     Arith. Mean Time:   992.790 ms 
+CountingAkkaActorBenchmark       Geo. Mean Time:   991.178 ms 
+CountingAkkaActorBenchmark   Harmonic Mean Time:   989.580 ms 
+CountingAkkaActorBenchmark        Std. Dev Time:    56.850 ms 
+CountingAkkaActorBenchmark     Lower Confidence:   950.675 ms 
+CountingAkkaActorBenchmark    Higher Confidence:  1034.905 ms 
+CountingAkkaActorBenchmark         Error Window:    42.115 ms (4.242 percent) 
+CountingAkkaActorBenchmark  Coeff. of Variation:     0.057 
+CountingAkkaActorBenchmark             Skewness:     0.382 

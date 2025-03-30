@@ -1,0 +1,11 @@
+Timestamp,CPU Core Power(W),GT Power(W),DRAM Power(W),(CPUs+GT+SA) Power(W),Avg Num Cores Active,Cores Active(%),CPU Temp(C),Pressure Level
+(Wed Mar 26 09:47:05 2025 +0100) (511.00ms elapsed),0.207,0,0.259,0.27,0.05,2.85,49.07 C,Nominal
+(Wed Mar 26 09:47:06 2025 +0100) (507.56ms elapsed),0.235,0.0356,0.362,0.39,0.12,8.44,49.56 C,Nominal
+(Wed Mar 26 09:47:06 2025 +0100) (506.66ms elapsed),0.993,0,0.277,1.08,0.14,11.89,49.56 C,Nominal
+(Wed Mar 26 09:47:07 2025 +0100) (508.65ms elapsed),0.0764,0,0.258,0.12,0.05,2.84,49.78 C,Nominal
+(Wed Mar 26 09:47:07 2025 +0100) (508.98ms elapsed),0.0615,0,0.268,0.11,0.03,2.39,49.78 C,Nominal
+(Wed Mar 26 09:47:08 2025 +0100) (508.94ms elapsed),0.0594,0,0.263,0.11,0.03,2.64,49.71 C,Nominal
+(Wed Mar 26 09:47:08 2025 +0100) (508.99ms elapsed),0.0758,0,0.256,0.12,0.04,2.62,49.71 C,Nominal
+(Wed Mar 26 09:47:09 2025 +0100) (507.99ms elapsed),0.0576,0,0.263,0.10,0.03,2.45,49.50 C,Nominal
+(Wed Mar 26 09:47:09 2025 +0100) (508.57ms elapsed),0.0929,0,0.286,0.14,0.05,4.06,49.50 C,Nominal
+(Wed Mar 26 09:47:10 2025 +0100) (507.01ms elapsed),4.07,0.0489,0.642,4.46,0.55,22.51,49.53 C,Nominal

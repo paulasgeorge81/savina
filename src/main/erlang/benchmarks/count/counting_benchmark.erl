@@ -1,7 +1,7 @@
 -module(counting_benchmark).
 -export([run/0, producer/2, counter/1, print_config/0]).
 
--define(N, 1_000_000).  % Number of messages to send
+-define(N, 500_000_000).  % Number of messages to send
 
 run() ->
     Self = self(),
