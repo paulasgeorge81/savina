@@ -2,6 +2,7 @@
 Erlang/OTP 27 [erts-15.1.2] [source] [64-bit] [smp:8:8] [ds:8:8:10] [async-threads:1] [dtrace]
 
 Eshell V15.1.2 (press Ctrl+G to abort, type help(). for help)
+1> benchmark_runner:run(philosopher_benchmark, 10).
 Runtime: Erlang/OTP:27
 Erlang Emulator Version: 15.1.2
 Benchmark: philosopher_benchmark
@@ -13,48 +14,49 @@ Config:
          O/S Name = Mac OS X
          O/S Arch = x86_64
 
-Idle sampling started, writing to "../../data/20250331090540_philosopher_benchmark_idle_power.csv"
-Benchmark sampling started, writing to "../../data/20250331090552_philosopher_benchmark_power_metrics.csv"
+Idle sampling started, writing to "../../data/20250401093422_philosopher_benchmark_idle_power.csv"
+Benchmark sampling started, writing to "../../data/20250401093433_philosopher_benchmark_power_metrics.csv"
 
 Execution - Iterations:
-Total retries: 3131028
-philosopher_benchmark          Iteration-1:   26100.725 ms
-Total retries: 3135385
-philosopher_benchmark          Iteration-2:   26685.259 ms
-Total retries: 3106821
-philosopher_benchmark          Iteration-3:   25775.686 ms
-Total retries: 3172875
-philosopher_benchmark          Iteration-4:   26385.454 ms
-Total retries: 3150870
-philosopher_benchmark          Iteration-5:   26831.516 ms
-Total retries: 3092764
-philosopher_benchmark          Iteration-6:   26416.844 ms
-Total retries: 3185230
-philosopher_benchmark          Iteration-7:   26837.193 ms
-Total retries: 3119280
-philosopher_benchmark          Iteration-8:   26237.244 ms
-Total retries: 3168763
-philosopher_benchmark          Iteration-9:   26786.408 ms
-Total retries: 3147715
-philosopher_benchmark          Iteration-10:   26684.676 ms
+Total retries: 3128904
+philosopher_benchmark          Iteration-1:   25230.359 ms
+Total retries: 3114821
+philosopher_benchmark          Iteration-2:   25712.155 ms
+Total retries: 3130729
+philosopher_benchmark          Iteration-3:   26753.381 ms
+Total retries: 3112085
+philosopher_benchmark          Iteration-4:   26948.598 ms
+Total retries: 3062215
+philosopher_benchmark          Iteration-5:   26859.199 ms
+Total retries: 3129348
+philosopher_benchmark          Iteration-6:   25874.153 ms
+Total retries: 3169761
+philosopher_benchmark          Iteration-7:   26182.203 ms
+Total retries: 3119916
+philosopher_benchmark          Iteration-8:   26994.805 ms
+Total retries: 3148604
+philosopher_benchmark          Iteration-9:   26412.517 ms
+Total retries: 3110082
+philosopher_benchmark          Iteration-10:   26409.567 ms
 
-PowerMetrics stopped at "9:10:16".
+PowerMetrics stopped at "9:38:57".
 
 Execution - Summary: 
    Total executions: 10
    Filtered executions: 10
-philosopher_benchmark Best Time: 25775.686 ms
-philosopher_benchmark Worst Time: 26837.193 ms
-philosopher_benchmark Median: 26550.760 ms
-philosopher_benchmark Arith. Mean Time: 26474.101 ms
-philosopher_benchmark Geo. Mean Time: 26471.934 ms
-philosopher_benchmark Harmonic Mean Time: 26469.754 ms
-philosopher_benchmark Std. Dev Time: 337.710 ms
-philosopher_benchmark Lower Confidence: 26264.786 ms
-philosopher_benchmark Higher Confidence: 26683.415 ms
-philosopher_benchmark Error Window: 209.315 ms (0.791 percent)
-philosopher_benchmark Coeff. of Variation: 0.013
-philosopher_benchmark Skewness: -0.762
+philosopher_benchmark Best Time: 25230.359 ms
+philosopher_benchmark Worst Time: 26994.805 ms
+philosopher_benchmark Median: 26411.042 ms
+philosopher_benchmark Arith. Mean Time: 26337.694 ms
+philosopher_benchmark Geo. Mean Time: 26331.727 ms
+philosopher_benchmark Harmonic Mean Time: 26325.711 ms
+philosopher_benchmark Std. Dev Time: 558.307 ms
+philosopher_benchmark Lower Confidence: 25991.652 ms
+philosopher_benchmark Higher Confidence: 26683.736 ms
+philosopher_benchmark Error Window: 346.042 ms (1.314 percent)
+philosopher_benchmark Coeff. of Variation: 0.021
+philosopher_benchmark Skewness: -0.626
+ok
 
 ============================== SCALA/AKKA =========================================
 Runtime: Java:21.0.4::Scala:2.11.12

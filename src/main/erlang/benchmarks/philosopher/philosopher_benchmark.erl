@@ -2,7 +2,7 @@
 -export([run/0, print_config/0]).
 
 -define(N, 10_000).      % Number of philosophers
--define(M, 5_000).  % Number of eating rounds
+-define(M, 1000).  % Number of eating rounds
 
 run() ->
     Main = self(),
