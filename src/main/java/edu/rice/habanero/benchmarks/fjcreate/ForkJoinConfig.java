@@ -47,4 +47,8 @@ public final class ForkJoinConfig {
             throw new IllegalStateException("Benchmark exited with unrealistic res value " + res);
         }
     }
+
+    protected static double identity(final double val) {
+        return val;
+    }
 }

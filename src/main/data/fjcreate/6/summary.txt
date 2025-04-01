@@ -1,0 +1,96 @@
+============================== ERLANG =============================================
+Erlang/OTP 27 [erts-15.1.2] [source] [64-bit] [smp:8:8] [ds:8:8:10] [async-threads:1] [dtrace]
+
+Eshell V15.1.2 (press Ctrl+G to abort, type help(). for help)
+1> benchmark_runner:run(fork_join_benchmark, 10).
+Runtime: Erlang/OTP:27
+Erlang Emulator Version: 15.1.2
+Benchmark: fork_join_benchmark
+Config: 
+    N (num workers) = 10000000
+
+      O/S Version = 15.3.2
+         O/S Name = Mac OS X
+         O/S Arch = x86_64
+
+Idle sampling started, writing to "../../data/20250331142636_fork_join_benchmark_idle_power.csv"
+Benchmark sampling started, writing to "../../data/20250331142647_fork_join_benchmark_power_metrics.csv"
+
+Execution - Iterations:
+fork_join_benchmark          Iteration-1:   95594.982 ms
+fork_join_benchmark          Iteration-2:   99688.233 ms
+fork_join_benchmark          Iteration-3:   95319.673 ms
+fork_join_benchmark          Iteration-4:   92625.861 ms
+fork_join_benchmark          Iteration-5:   98752.276 ms
+fork_join_benchmark          Iteration-6:   96453.941 ms
+fork_join_benchmark          Iteration-7:   95423.345 ms
+fork_join_benchmark          Iteration-8:   98960.942 ms
+fork_join_benchmark          Iteration-9:   97699.513 ms
+fork_join_benchmark          Iteration-10:   95023.134 ms
+
+PowerMetrics stopped at "14:42:53".
+
+Execution - Summary: 
+   Total executions: 10
+   Filtered executions: 10
+fork_join_benchmark Best Time: 92625.861 ms
+fork_join_benchmark Worst Time: 99688.233 ms
+fork_join_benchmark Median: 96024.462 ms
+fork_join_benchmark Arith. Mean Time: 96554.190 ms
+fork_join_benchmark Geo. Mean Time: 96531.734 ms
+fork_join_benchmark Harmonic Mean Time: 96509.230 ms
+fork_join_benchmark Std. Dev Time: 2080.070 ms
+fork_join_benchmark Lower Confidence: 95264.949 ms
+fork_join_benchmark Higher Confidence: 97843.431 ms
+fork_join_benchmark Error Window: 1289.241 ms (1.335 percent)
+fork_join_benchmark Coeff. of Variation: 0.022
+fork_join_benchmark Skewness: -0.143
+ok
+
+============================== SCALA/AKKA =========================================
+Runtime: Java:21.0.4::Scala:2.11.12
+Benchmark: ForkJoinAkkaActorBenchmark
+Args: 
+          N (num workers) = 10000000   
+         C (num channels) = 1          
+                    debug = true       
+
+             Java Version = 21.0.4     
+              O/S Version = 15.3.2     
+                 O/S Name = Mac OS X   
+                 O/S Arch = x86_64     
+
+Idle sampling started, writing to ./src/main/data/20250331140746_fork_join_akka_actor_benchmark_idle_power.csv
+Benchmark sampling started, writing to ./src/main/data/20250331140757_fork_join_akka_actor_benchmark_power_metrics.csv
+
+Execution - Iterations: 
+ForkJoinAkkaActorBenchmark          Iteration-0: 87272.620 ms 
+ForkJoinAkkaActorBenchmark          Iteration-1: 87255.160 ms 
+ForkJoinAkkaActorBenchmark          Iteration-2: 87058.173 ms 
+ForkJoinAkkaActorBenchmark          Iteration-3: 85998.673 ms 
+ForkJoinAkkaActorBenchmark          Iteration-4: 87625.347 ms 
+ForkJoinAkkaActorBenchmark          Iteration-5: 87995.940 ms 
+ForkJoinAkkaActorBenchmark          Iteration-6: 89530.581 ms 
+ForkJoinAkkaActorBenchmark          Iteration-7: 87556.181 ms 
+ForkJoinAkkaActorBenchmark          Iteration-8: 87650.352 ms 
+ForkJoinAkkaActorBenchmark          Iteration-9: 89234.568 ms 
+
+
+
+PowerMetrics stopped at 14:22:35.
+
+Execution - Summary: 
+         Total executions = 10         
+      Filtered executions = 10         
+ForkJoinAkkaActorBenchmark            Best Time: 85998.673 ms 
+ForkJoinAkkaActorBenchmark           Worst Time: 89530.581 ms 
+ForkJoinAkkaActorBenchmark               Median: 87590.764 ms 
+ForkJoinAkkaActorBenchmark     Arith. Mean Time: 87717.760 ms 
+ForkJoinAkkaActorBenchmark       Geo. Mean Time: 87712.357 ms 
+ForkJoinAkkaActorBenchmark   Harmonic Mean Time: 87706.971 ms 
+ForkJoinAkkaActorBenchmark        Std. Dev Time:   974.991 ms 
+ForkJoinAkkaActorBenchmark     Lower Confidence: 87113.454 ms 
+ForkJoinAkkaActorBenchmark    Higher Confidence: 88322.065 ms 
+ForkJoinAkkaActorBenchmark         Error Window:   604.305 ms (0.689 percent) 
+ForkJoinAkkaActorBenchmark  Coeff. of Variation:     0.011 
+ForkJoinAkkaActorBenchmark             Skewness:     0.469 

@@ -46,7 +46,8 @@ object ForkJoinAkkaActorBenchmark {
   private class ForkJoinActor extends AkkaActor[AnyRef] {
     override def process(msg: AnyRef) {
       start()
-      ForkJoinConfig.performComputation(37.2)
+      // ForkJoinConfig.performComputation(37.2)
+       ForkJoinConfig.identity(37.2)
       exit()
     }
   }

@@ -1,6 +1,6 @@
 -module(fork_join_benchmark).
 -export([run/0, worker/0, perform_computation/1, print_config/0]).
--define(N, 40_000).
+-define(N, 50_000_000).
 
 run() ->
     Main = self(),
@@ -11,7 +11,7 @@ run() ->
 worker() ->
     receive
         {start, Main} ->
-            perform_computation(37.2),
+            identity(37.2),
             Main ! done
     end.
 
@@ -28,6 +28,10 @@ perform_computation(Theta) ->
         true -> erlang:error("Benchmark exited with unrealistic res value");
         false -> ok
     end.
+
+identity(Val)->
+    Val.
+
 
 print_config() ->
     io:format("    N (num workers) = ~p~n", [?N]).

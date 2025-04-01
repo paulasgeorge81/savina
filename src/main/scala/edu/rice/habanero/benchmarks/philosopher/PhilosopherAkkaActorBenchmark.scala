@@ -89,6 +89,7 @@ object PhilosopherAkkaActorBenchmark {
 
           roundsSoFar += 1
           counter.addAndGet(localCounter)
+          localCounter = 0  // Reset retry count for the next round
 
           arbitrator ! myDoneMessage
           if (roundsSoFar < rounds) {
