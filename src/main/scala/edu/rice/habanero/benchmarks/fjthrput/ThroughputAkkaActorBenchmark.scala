@@ -59,7 +59,8 @@ object ThroughputAkkaActorBenchmark {
     override def process(msg: AnyRef) {
 
       messagesProcessed += 1
-      ThroughputConfig.performComputation(37.2)
+      // ThroughputConfig.performComputation(37.2)
+      ThroughputConfig.identity(37.2)
 
       if (messagesProcessed == totalMessages) {
         exit()

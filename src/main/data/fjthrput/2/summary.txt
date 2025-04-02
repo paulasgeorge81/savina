@@ -1,0 +1,99 @@
+============================== ERLANG =============================================
+Erlang/OTP 27 [erts-15.1.2] [source] [64-bit] [smp:8:8] [ds:8:8:10] [async-threads:1] [dtrace]
+
+Eshell V15.1.2 (press Ctrl+G to abort, type help(). for help)
+1> benchmark_runner:run(throughput_benchmark, 10).
+Runtime: Erlang/OTP:27
+Erlang Emulator Version: 15.1.2
+Benchmark: throughput_benchmark
+Config: 
+    N (messages per actor) = 10000
+    A (num actors) = 100
+
+      O/S Version = 15.3.2
+         O/S Name = Mac OS X
+         O/S Arch = x86_64
+
+Idle sampling started, writing to "../../data/20250401114724_throughput_benchmark_idle_power.csv"
+Benchmark sampling started, writing to "../../data/20250401114736_throughput_benchmark_power_metrics.csv"
+
+Execution - Iterations:
+throughput_benchmark          Iteration-1:   1204.311 ms
+throughput_benchmark          Iteration-2:   1301.938 ms
+throughput_benchmark          Iteration-3:   1231.312 ms
+throughput_benchmark          Iteration-4:   1287.790 ms
+throughput_benchmark          Iteration-5:   1279.303 ms
+throughput_benchmark          Iteration-6:   1311.886 ms
+throughput_benchmark          Iteration-7:   1348.498 ms
+throughput_benchmark          Iteration-8:   1273.195 ms
+throughput_benchmark          Iteration-9:   1215.941 ms
+throughput_benchmark          Iteration-10:   1247.919 ms
+
+PowerMetrics stopped at "11:47:48".
+
+Execution - Summary: 
+   Total executions: 10
+   Filtered executions: 10
+throughput_benchmark Best Time: 1204.311 ms
+throughput_benchmark Worst Time: 1348.498 ms
+throughput_benchmark Median: 1276.249 ms
+throughput_benchmark Arith. Mean Time: 1270.209 ms
+throughput_benchmark Geo. Mean Time: 1269.479 ms
+throughput_benchmark Harmonic Mean Time: 1268.750 ms
+throughput_benchmark Std. Dev Time: 43.094 ms
+throughput_benchmark Lower Confidence: 1243.499 ms
+throughput_benchmark Higher Confidence: 1296.919 ms
+throughput_benchmark Error Window: 26.710 ms (2.103 percent)
+throughput_benchmark Coeff. of Variation: 0.034
+throughput_benchmark Skewness: 0.103
+ok
+
+============================== SCALA/AKKA =========================================
+Runtime: Java:21.0.4::Scala:2.11.12
+Benchmark: ThroughputAkkaActorBenchmark
+Args: 
+   N (messages per actor) = 10000      
+           A (num actors) = 100        
+         C (num channels) = 1          
+       P (use priorities) = true       
+                    debug = true       
+
+             Java Version = 21.0.4     
+              O/S Version = 15.3.2     
+                 O/S Name = Mac OS X   
+                 O/S Arch = x86_64     
+
+Idle sampling started, writing to ./src/main/data/20250401114852_throughput_akka_actor_benchmark_idle_power.csv
+Benchmark sampling started, writing to ./src/main/data/20250401114904_throughput_akka_actor_benchmark_power_metrics.csv
+
+Execution - Iterations: 
+ThroughputAkkaActorBenchmark          Iteration-0:   480.065 ms 
+ThroughputAkkaActorBenchmark          Iteration-1:   268.538 ms 
+ThroughputAkkaActorBenchmark          Iteration-2:   151.455 ms 
+ThroughputAkkaActorBenchmark          Iteration-3:   164.652 ms 
+ThroughputAkkaActorBenchmark          Iteration-4:   127.436 ms 
+ThroughputAkkaActorBenchmark          Iteration-5:   130.640 ms 
+ThroughputAkkaActorBenchmark          Iteration-6:   129.453 ms 
+ThroughputAkkaActorBenchmark          Iteration-7:   189.616 ms 
+ThroughputAkkaActorBenchmark          Iteration-8:   165.295 ms 
+ThroughputAkkaActorBenchmark          Iteration-9:   132.196 ms 
+
+
+
+PowerMetrics stopped at 11:49:06.
+
+Execution - Summary: 
+         Total executions = 10         
+      Filtered executions = 5          
+ThroughputAkkaActorBenchmark            Best Time:   132.196 ms 
+ThroughputAkkaActorBenchmark           Worst Time:   189.616 ms 
+ThroughputAkkaActorBenchmark               Median:   164.652 ms 
+ThroughputAkkaActorBenchmark     Arith. Mean Time:   160.643 ms 
+ThroughputAkkaActorBenchmark       Geo. Mean Time:   159.529 ms 
+ThroughputAkkaActorBenchmark   Harmonic Mean Time:   158.407 ms 
+ThroughputAkkaActorBenchmark        Std. Dev Time:    18.819 ms 
+ThroughputAkkaActorBenchmark     Lower Confidence:   144.147 ms 
+ThroughputAkkaActorBenchmark    Higher Confidence:   177.138 ms 
+ThroughputAkkaActorBenchmark         Error Window:    16.496 ms (10.269 percent) 
+ThroughputAkkaActorBenchmark  Coeff. of Variation:     0.117 
+ThroughputAkkaActorBenchmark             Skewness:     0.026 
