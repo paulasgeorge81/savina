@@ -46,6 +46,13 @@ arbitrator(Main, N, Forks, TotalRetries) ->
         {hungry, Philosopher, Id} ->
             LeftFork = Id,
             RightFork = (Id + 1) rem ?N,
+            % case Fork of
+            %     #{LeftFork := false, RightFork := false} ->
+            %         ....;
+            %     _ -> ...
+            % end
+            % 
+            % Try Arrays
             case {maps:get(LeftFork, Forks, false), maps:get(RightFork, Forks, false)} of
                 {false, false} -> 
                     % io:format("Philosopher ~p can eat.~n", [Id]),

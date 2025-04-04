@@ -37,7 +37,7 @@ manager(Parent, AvailableProducers, AvailableConsumers, AvailableConsumersSize, 
             case AvailableConsumers of
                 [] -> 
                     NewPendingData = [{Data, ProducerPid} | PendingData],
-                    % NewPendingData = PendingData ++ [{Data, ProducerPid}],
+                    % NewPendingData = PendingData ++ [{Data, ProducerPid}], FIFO
                     NewPendingDataSize = PendingDataSize + 1,
                     case NewPendingDataSize >= AdjustedBufferSize of 
                         true ->
