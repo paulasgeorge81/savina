@@ -108,7 +108,7 @@ start_power_metrics(BenchmarkModule) ->
     BenchmarkLogFile = generate_log_filename(atom_to_list(BenchmarkModule)++"_power_metrics"),
     io:format("Benchmark sampling started, writing to ~p~n~n", [BenchmarkLogFile]),
     PowerMetricsCmd = 
-        "sudo powermetrics --samplers cpu_power,thermal,smc -i 1000 -a 0 "
+        "sudo powermetrics --samplers cpu_power,thermal,smc -i 100 -a 0 "
         "--hide-cpu-duty-cycle --show-extra-power-info | "
         "awk 'BEGIN {core_power=\"N/A\"; gt_power=\"N/A\"; dram_power=\"N/A\"; cpu_gt_sa_power=\"N/A\"; cores_active=\"N/A\"; avg_cores_active=\"N/A\"; temp=\"N/A\"; timestamp=\"N/A\"; pressure=\"N/A\"; logfile=\"" ++ BenchmarkLogFile ++ "\"; "
         "if (system(\"test -s \" logfile) != 0) print \"Timestamp,CPU Core Power(W),GT Power(W),DRAM Power(W),(CPUs+GT+SA) Power(W),Avg Num Cores Active,Cores Active(%),CPU Temp(C),Pressure Level\" > logfile} "
