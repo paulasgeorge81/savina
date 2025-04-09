@@ -12,7 +12,6 @@ run() ->
         done -> ok
     end.
 
-
 spawn_ring(N, Main) ->
     spawn_ring(N, Main, undefined, undefined).
 
