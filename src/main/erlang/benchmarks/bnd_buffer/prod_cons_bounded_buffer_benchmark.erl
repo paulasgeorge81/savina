@@ -1,5 +1,5 @@
 -module(prod_cons_bounded_buffer_benchmark).
--export([run/0, manager/9, producer/1, consumer/0, process_item/2,print_config/0]).
+-export([run/0, manager/9, producer/1, consumer/0,print_config/0]).
 
 -define(BUFFER_SIZE, 50).
 -define(NUM_PRODUCERS, 40).
@@ -98,7 +98,8 @@ try_exit(Parent, AvailableProducers, AvailableConsumers, AvailableConsumersSize,
 producer(RemainingItems) ->
     receive
         produce when RemainingItems > 0 ->
-            Data = process_item(0.0, ?PROD_COST),
+            % Data = process_item(0.0, ?PROD_COST),
+            Data = identity(0.0, ?PROD_COST),
             manager ! {data, Data, self()},
             producer(RemainingItems - 1);
         produce ->
@@ -108,33 +109,37 @@ producer(RemainingItems) ->
 consumer() ->
     receive
         {consume, Data} -> 
-            process_item(Data, ?CONS_COST),
+            % process_item(Data, ?CONS_COST),
+            identity(Data, ?CONS_COST),
             manager ! {consumer_available, self()},
             consumer();
         stop -> 
             ok
     end. 
 
-process_item(CurTerm, Cost) ->
-    RandState = pseudo_random:new(Cost),
-    outer_loop(Cost, RandState, CurTerm).
+identity(CurTerm, _Cost) ->
+    CurTerm.
 
-outer_loop(0, RandState, Res) ->
-    {RandVal, _NewRandState} = pseudo_random:next_double(RandState),
-    Res + math:log(abs(RandVal) + 0.01);
+% process_item(CurTerm, Cost) ->
+%     RandState = pseudo_random:new(Cost),
+%     outer_loop(Cost, RandState, CurTerm).
 
-outer_loop(Cost, RandState, Res) when Cost > 0 ->
-    {NewRes, NewRandState} = inner_loop(Res, 100, RandState),
-    outer_loop(Cost - 1, NewRandState, NewRes).
+% outer_loop(0, RandState, Res) ->
+%     {RandVal, _NewRandState} = pseudo_random:next_double(RandState),
+%     Res + math:log(abs(RandVal) + 0.01);
 
-inner_loop(Res, 0, RandState) ->
-    {Res, RandState};
+% outer_loop(Cost, RandState, Res) when Cost > 0 ->
+%     {NewRes, NewRandState} = inner_loop(Res, 100, RandState),
+%     outer_loop(Cost - 1, NewRandState, NewRes).
 
-inner_loop(Res, Count, RandState) when Count > 0 ->
-    {RandVal, NewRandState} = pseudo_random:next_double(RandState),
-    % io:format("Erlang RandVal: ~p~n", [RandVal]),
-    % io:format("Erlang Res: ~p~n", [Res]),
-    inner_loop(Res + math:log(abs(RandVal) + 0.01), Count - 1, NewRandState).
+% inner_loop(Res, 0, RandState) ->
+%     {Res, RandState};
+
+% inner_loop(Res, Count, RandState) when Count > 0 ->
+%     {RandVal, NewRandState} = pseudo_random:next_double(RandState),
+%     % io:format("Erlang RandVal: ~p~n", [RandVal]),
+%     % io:format("Erlang Res: ~p~n", [Res]),
+%     inner_loop(Res + math:log(abs(RandVal) + 0.01), Count - 1, NewRandState).
 
 
 print_config() ->

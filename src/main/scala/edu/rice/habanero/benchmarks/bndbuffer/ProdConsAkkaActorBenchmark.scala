@@ -126,7 +126,8 @@ object ProdConsAkkaActorBenchmark {
       private var itemsProduced: Int = 0
 
       private def produceData() {
-        prodItem = processItem(prodItem, prodCost)
+        // prodItem = processItem(prodItem, prodCost)
+        prodItem = identity(prodItem, prodCost)
         manager ! new ProdConsBoundedBufferConfig.DataItemMessage(prodItem, self)
         itemsProduced += 1
       }
@@ -155,7 +156,8 @@ object ProdConsAkkaActorBenchmark {
       private var consItem: Double = 0
 
       protected def consumeDataItem(dataToConsume: Double) {
-        consItem = processItem(consItem + dataToConsume, consCost)
+        // consItem = processItem(consItem + dataToConsume, consCost)
+        consItem = identity(dataToConsume, consCost)
       }
 
       override def process(theMsg: AnyRef) {

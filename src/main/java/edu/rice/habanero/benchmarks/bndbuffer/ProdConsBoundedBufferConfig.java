@@ -93,6 +93,10 @@ public final class ProdConsBoundedBufferConfig {
         return res;
     }
 
+    protected static double identity(final double curTerm, final int cost) {
+        return curTerm;
+    }
+
     protected enum MessageSource {
         PRODUCER,
         CONSUMER
