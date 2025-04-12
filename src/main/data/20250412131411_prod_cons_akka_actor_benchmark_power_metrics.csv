@@ -1,2 +1,0 @@
-Timestamp,CPU Core Power(W),GT Power(W),DRAM Power(W),(CPUs+GT+SA) Power(W),Avg Num Cores Active,Cores Active(%),CPU Temp(C),Pressure Level
-(Sat Apr 12 13:14:12 2025 +0200) (1006.74ms elapsed),40.5,0.267,1.2,45.24,3.98,99.93,81.71 C,Moderate

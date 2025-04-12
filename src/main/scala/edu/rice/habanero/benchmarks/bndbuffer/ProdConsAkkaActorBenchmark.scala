@@ -127,6 +127,7 @@ object ProdConsAkkaActorBenchmark {
 
       private def produceData() {
         // prodItem = processItem(prodItem, prodCost)
+        // use identity function for a constant production cost
         prodItem = identity(prodItem, prodCost)
         manager ! new ProdConsBoundedBufferConfig.DataItemMessage(prodItem, self)
         itemsProduced += 1
@@ -157,6 +158,7 @@ object ProdConsAkkaActorBenchmark {
 
       protected def consumeDataItem(dataToConsume: Double) {
         // consItem = processItem(consItem + dataToConsume, consCost)
+        // use identity function for a constant consumption cost
         consItem = identity(dataToConsume, consCost)
       }
 
