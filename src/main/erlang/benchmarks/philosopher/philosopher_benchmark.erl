@@ -1,7 +1,7 @@
 -module(philosopher_benchmark).
 -export([run/0, print_config/0, philosopher/6, arbitrator/4]).
 
--define(N, 5_000).      % Number of philosophers
+-define(N, 1_000).      % Number of philosophers
 -define(M, 500_000).  % Number of eating rounds
 
 run() ->

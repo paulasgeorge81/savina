@@ -1,0 +1,120 @@
+============================== ERLANG =============================================
+Erlang/OTP 27 [erts-15.1.2] [source] [64-bit] [smp:8:8] [ds:8:8:10] [async-threads:1] [dtrace]
+
+Eshell V15.1.2 (press Ctrl+G to abort, type help(). for help)
+1> benchmark_runner:run(philosopher_benchmark, 10).
+Runtime: Erlang/OTP:27
+Erlang Emulator Version: 15.1.2
+Benchmark: philosopher_benchmark
+Config: 
+    N (num philosophers) = 1000
+    M (num eating rounds) = 50000
+
+      O/S Version = 15.3.2
+         O/S Name = Mac OS X
+         O/S Arch = x86_64
+
+Idle sampling started, writing to "../../data/20250415214225_philosopher_benchmark_idle_power.csv"
+Benchmark sampling started, writing to "../../data/20250415214236_philosopher_benchmark_power_metrics.csv"
+
+Execution - Iterations:
+Total retries: 34800257
+philosopher_benchmark          Iteration-1:   178771.867 ms
+Total retries: 35591166
+philosopher_benchmark          Iteration-2:   179535.526 ms
+Total retries: 36006919
+philosopher_benchmark          Iteration-3:   181081.965 ms
+Total retries: 35428600
+philosopher_benchmark          Iteration-4:   181056.674 ms
+Total retries: 34884632
+philosopher_benchmark          Iteration-5:   179200.386 ms
+Total retries: 37130971
+philosopher_benchmark          Iteration-6:   183791.212 ms
+Total retries: 34407812
+philosopher_benchmark          Iteration-7:   180229.950 ms
+Total retries: 36841712
+philosopher_benchmark          Iteration-8:   183431.781 ms
+Total retries: 34924831
+philosopher_benchmark          Iteration-9:   179439.963 ms
+Total retries: 34507753
+philosopher_benchmark          Iteration-10:   178930.274 ms
+
+PowerMetrics stopped at "22:12:41".
+
+Execution - Summary: 
+   Total executions: 10
+   Filtered executions: 10
+philosopher_benchmark Best Time: 178771.867 ms
+philosopher_benchmark Worst Time: 183791.212 ms
+philosopher_benchmark Median: 179882.738 ms
+philosopher_benchmark Arith. Mean Time: 180546.960 ms
+philosopher_benchmark Geo. Mean Time: 180538.884 ms
+philosopher_benchmark Harmonic Mean Time: 180530.852 ms
+philosopher_benchmark Std. Dev Time: 1712.315 ms
+philosopher_benchmark Lower Confidence: 179485.656 ms
+philosopher_benchmark Higher Confidence: 181608.264 ms
+philosopher_benchmark Error Window: 1061.304 ms (0.588 percent)
+philosopher_benchmark Coeff. of Variation: 0.009
+philosopher_benchmark Skewness: 0.968
+ok
+
+============================== SCALA/AKKA =========================================
+Runtime: Java:21.0.4::Scala:2.11.12
+Benchmark: PhilosopherAkkaActorBenchmark
+Args: 
+     N (num philosophers) = 1000       
+    M (num eating rounds) = 50000      
+         C (num channels) = 1          
+                    debug = true       
+
+             Java Version = 21.0.4     
+              O/S Version = 15.3.2     
+                 O/S Name = Mac OS X   
+                 O/S Arch = x86_64     
+
+Idle sampling started, writing to ./src/main/data/20250415221431_philosopher_akka_actor_benchmark_idle_power.csv
+Benchmark sampling started, writing to ./src/main/data/20250415221442_philosopher_akka_actor_benchmark_power_metrics.csv
+
+Execution - Iterations: 
+  Num retries: 29213433
+PhilosopherAkkaActorBenchmark          Iteration-0: 54792.680 ms 
+  Num retries: 26529422
+PhilosopherAkkaActorBenchmark          Iteration-1: 56473.711 ms 
+  Num retries: 26052199
+PhilosopherAkkaActorBenchmark          Iteration-2: 59144.619 ms 
+  Num retries: 28257356
+PhilosopherAkkaActorBenchmark          Iteration-3: 59349.353 ms 
+  Num retries: 25377789
+PhilosopherAkkaActorBenchmark          Iteration-4: 55515.764 ms 
+  Num retries: 26321927
+PhilosopherAkkaActorBenchmark          Iteration-5: 56926.197 ms 
+  Num retries: 26853720
+PhilosopherAkkaActorBenchmark          Iteration-6: 54345.498 ms 
+  Num retries: 26399126
+PhilosopherAkkaActorBenchmark          Iteration-7: 58962.392 ms 
+  Num retries: 28070390
+PhilosopherAkkaActorBenchmark          Iteration-8: 56930.285 ms 
+  Num retries: 26736619
+PhilosopherAkkaActorBenchmark          Iteration-9: 55745.264 ms 
+
+
+
+PowerMetrics stopped at 22:24:10.
+
+Attributes - Summary: 
+PhilosopherAkkaActorBenchmark     Avg. Retry Count: 26981198.100 [ 10 of  10 values] 
+Execution - Summary: 
+         Total executions = 10         
+      Filtered executions = 10         
+PhilosopherAkkaActorBenchmark            Best Time: 54345.498 ms 
+PhilosopherAkkaActorBenchmark           Worst Time: 59349.353 ms 
+PhilosopherAkkaActorBenchmark               Median: 56699.954 ms 
+PhilosopherAkkaActorBenchmark     Arith. Mean Time: 56818.576 ms 
+PhilosopherAkkaActorBenchmark       Geo. Mean Time: 56792.614 ms 
+PhilosopherAkkaActorBenchmark   Harmonic Mean Time: 56766.768 ms 
+PhilosopherAkkaActorBenchmark        Std. Dev Time:  1721.161 ms 
+PhilosopherAkkaActorBenchmark     Lower Confidence: 55751.790 ms 
+PhilosopherAkkaActorBenchmark    Higher Confidence: 57885.363 ms 
+PhilosopherAkkaActorBenchmark         Error Window:  1066.786 ms (1.878 percent) 
+PhilosopherAkkaActorBenchmark  Coeff. of Variation:     0.030 
+PhilosopherAkkaActorBenchmark             Skewness:     0.255 

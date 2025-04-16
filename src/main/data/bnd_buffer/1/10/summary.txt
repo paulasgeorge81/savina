@@ -1,0 +1,106 @@
+============================== ERLANG =============================================
+Erlang/OTP 27 [erts-15.1.2] [source] [64-bit] [smp:8:8] [ds:8:8:10] [async-threads:1] [dtrace]
+
+Eshell V15.1.2 (press Ctrl+G to abort, type help(). for help)
+1> benchmark_runner:run(prod_cons_bounded_buffer_benchmark, 10).
+Runtime: Erlang/OTP:27
+Erlang Emulator Version: 15.1.2
+Benchmark: prod_cons_bounded_buffer_benchmark
+Config: 
+    Buffer size = 1200000
+    num producers = 1000000
+    num consumers = 1000000
+    prod cost = 25
+    cons cost = 25
+    items per producer = 1000
+
+      O/S Version = 15.3.2
+         O/S Name = Mac OS X
+         O/S Arch = x86_64
+
+Idle sampling started, writing to "../../data/20250414090820_prod_cons_bounded_buffer_benchmark_idle_power.csv"
+Benchmark sampling started, writing to "../../data/20250414090831_prod_cons_bounded_buffer_benchmark_power_metrics.csv"
+
+Execution - Iterations:
+prod_cons_bounded_buffer_benchmark          Iteration-1:   4559543.648 ms
+prod_cons_bounded_buffer_benchmark          Iteration-2:   4524109.898 ms
+prod_cons_bounded_buffer_benchmark          Iteration-3:   4512804.089 ms
+prod_cons_bounded_buffer_benchmark          Iteration-4:   4547234.481 ms
+prod_cons_bounded_buffer_benchmark          Iteration-5:   4551085.411 ms
+prod_cons_bounded_buffer_benchmark          Iteration-6:   4542972.197 ms
+prod_cons_bounded_buffer_benchmark          Iteration-7:   4556797.262 ms
+prod_cons_bounded_buffer_benchmark          Iteration-8:   4533475.984 ms
+prod_cons_bounded_buffer_benchmark          Iteration-9:   4558627.438 ms
+prod_cons_bounded_buffer_benchmark          Iteration-10:   4515921.204 ms
+
+PowerMetrics stopped at "21:45:14".
+
+Execution - Summary: 
+   Total executions: 10
+   Filtered executions: 10
+prod_cons_bounded_buffer_benchmark Best Time: 4512804.089 ms
+prod_cons_bounded_buffer_benchmark Worst Time: 4559543.648 ms
+prod_cons_bounded_buffer_benchmark Median: 4545103.339 ms
+prod_cons_bounded_buffer_benchmark Arith. Mean Time: 4540257.161 ms
+prod_cons_bounded_buffer_benchmark Geo. Mean Time: 4540226.195 ms
+prod_cons_bounded_buffer_benchmark Harmonic Mean Time: 4540195.196 ms
+prod_cons_bounded_buffer_benchmark Std. Dev Time: 16759.906 ms
+prod_cons_bounded_buffer_benchmark Lower Confidence: 4529869.264 ms
+prod_cons_bounded_buffer_benchmark Higher Confidence: 4550645.058 ms
+prod_cons_bounded_buffer_benchmark Error Window: 10387.897 ms (0.229 percent)
+prod_cons_bounded_buffer_benchmark Coeff. of Variation: 0.004
+prod_cons_bounded_buffer_benchmark Skewness: -0.474
+ok
+
+============================== SCALA/AKKA =========================================
+Runtime: Java:21.0.4::Scala:2.11.12
+Benchmark: ProdConsAkkaActorBenchmark
+Args: 
+              Buffer size = 1200000    
+            num producers = 1000000    
+            num consumers = 1000000    
+                prod cost = 25         
+                cons cost = 25         
+       items per producer = 1000       
+            num mailboxes = 1          
+                    debug = true       
+
+             Java Version = 21.0.4     
+              O/S Version = 15.3.2     
+                 O/S Name = Mac OS X   
+                 O/S Arch = x86_64     
+
+Idle sampling started, writing to ./src/main/data/20250413213738_prod_cons_akka_actor_benchmark_idle_power.csv
+Benchmark sampling started, writing to ./src/main/data/20250413213749_prod_cons_akka_actor_benchmark_power_metrics.csv
+
+Execution - Iterations: 
+ProdConsAkkaActorBenchmark          Iteration-0: 1859643.638 ms 
+ProdConsAkkaActorBenchmark          Iteration-1: 1975560.558 ms 
+ProdConsAkkaActorBenchmark          Iteration-2: 2033282.732 ms 
+ProdConsAkkaActorBenchmark          Iteration-3: 2017499.342 ms 
+ProdConsAkkaActorBenchmark          Iteration-4: 1968765.305 ms 
+ProdConsAkkaActorBenchmark          Iteration-5: 1970964.783 ms 
+ProdConsAkkaActorBenchmark          Iteration-6: 1999022.203 ms 
+ProdConsAkkaActorBenchmark          Iteration-7: 1973826.479 ms 
+ProdConsAkkaActorBenchmark          Iteration-8: 1992041.467 ms 
+ProdConsAkkaActorBenchmark          Iteration-9: 1962360.812 ms 
+
+
+
+PowerMetrics stopped at 03:07:03.
+
+Execution - Summary: 
+         Total executions = 10         
+      Filtered executions = 10         
+ProdConsAkkaActorBenchmark            Best Time: 1859643.638 ms 
+ProdConsAkkaActorBenchmark           Worst Time: 2033282.732 ms 
+ProdConsAkkaActorBenchmark               Median: 1974693.519 ms 
+ProdConsAkkaActorBenchmark     Arith. Mean Time: 1975296.732 ms 
+ProdConsAkkaActorBenchmark       Geo. Mean Time: 1974789.406 ms 
+ProdConsAkkaActorBenchmark   Harmonic Mean Time: 1974270.367 ms 
+ProdConsAkkaActorBenchmark        Std. Dev Time: 44264.380 ms 
+ProdConsAkkaActorBenchmark     Lower Confidence: 1947861.385 ms 
+ProdConsAkkaActorBenchmark    Higher Confidence: 2002732.079 ms 
+ProdConsAkkaActorBenchmark         Error Window: 27435.347 ms (1.389 percent) 
+ProdConsAkkaActorBenchmark  Coeff. of Variation:     0.022 
+ProdConsAkkaActorBenchmark             Skewness:    -1.616 
