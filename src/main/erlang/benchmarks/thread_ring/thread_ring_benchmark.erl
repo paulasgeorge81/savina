@@ -1,7 +1,7 @@
 -module(thread_ring_benchmark).
 -export([run/0, actor/2, print_config/0]).
--define(N, 50_000).    % Number of actors
--define(R, 1_000_000_000). % Number of rounds
+-define(N, 50_000_000).    % Number of actors
+-define(R, 100_000_000). % Number of rounds
 
 run() -> 
     Main = self(),
