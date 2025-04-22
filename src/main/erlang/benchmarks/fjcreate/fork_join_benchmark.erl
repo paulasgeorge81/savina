@@ -1,12 +1,31 @@
 -module(fork_join_benchmark).
 -export([run/0, worker/0, perform_computation/1, print_config/0]).
--define(N, 50_000_000).
+-define(N, 40_000_000).
 
 run() ->
     Main = self(),
-    Workers = [spawn_link(fun() -> worker() end) || _ <- lists:seq(1, ?N)],
-    [Worker ! {start, Main} || Worker <- Workers],
+    % Workers = [spawn(?MODULE, worker, []) || _ <- lists:seq(1, ?N)],
+    Workers = spawn_workers(?N),
+    % [Worker ! {start, Main} || Worker <- Workers],
+    send_start_messages(Workers, Main),
+
     wait_for_workers(?N).
+
+spawn_workers(N) ->
+    spawn_workers(N, []).
+
+spawn_workers(0, Acc) ->
+    Acc;
+    % lists:reverse(Acc);
+spawn_workers(N, Acc) ->
+    Pid = spawn(?MODULE, worker, []),
+    spawn_workers(N - 1, [Pid | Acc]).
+
+send_start_messages([], _Main) ->
+    ok;
+send_start_messages([Pid | Rest], Main) ->
+    Pid ! {start, Main},
+    send_start_messages(Rest, Main).
 
 worker() ->
     receive

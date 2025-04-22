@@ -13,38 +13,38 @@ Config:
          O/S Name = Mac OS X
          O/S Arch = x86_64
 
-Idle sampling started, writing to "../../data/20250331135139_fork_join_benchmark_idle_power.csv"
-Benchmark sampling started, writing to "../../data/20250331135151_fork_join_benchmark_power_metrics.csv"
+Idle sampling started, writing to "../../data/20250421175815_fork_join_benchmark_idle_power.csv"
+Benchmark sampling started, writing to "../../data/20250421175827_fork_join_benchmark_power_metrics.csv"
 
 Execution - Iterations:
-fork_join_benchmark          Iteration-1:   39099.406 ms
-fork_join_benchmark          Iteration-2:   31402.722 ms
-fork_join_benchmark          Iteration-3:   37242.812 ms
-fork_join_benchmark          Iteration-4:   35329.131 ms
-fork_join_benchmark          Iteration-5:   34975.381 ms
-fork_join_benchmark          Iteration-6:   37003.494 ms
-fork_join_benchmark          Iteration-7:   35084.409 ms
-fork_join_benchmark          Iteration-8:   35190.209 ms
-fork_join_benchmark          Iteration-9:   37612.863 ms
-fork_join_benchmark          Iteration-10:   31074.406 ms
+fork_join_benchmark          Iteration-1:   29734.491 ms
+fork_join_benchmark          Iteration-2:   26861.313 ms
+fork_join_benchmark          Iteration-3:   26948.282 ms
+fork_join_benchmark          Iteration-4:   26096.429 ms
+fork_join_benchmark          Iteration-5:   26390.636 ms
+fork_join_benchmark          Iteration-6:   26521.481 ms
+fork_join_benchmark          Iteration-7:   27040.233 ms
+fork_join_benchmark          Iteration-8:   26888.625 ms
+fork_join_benchmark          Iteration-9:   25771.987 ms
+fork_join_benchmark          Iteration-10:   26229.560 ms
 
-PowerMetrics stopped at "13:57:45".
+PowerMetrics stopped at "18:2:55".
 
 Execution - Summary: 
    Total executions: 10
    Filtered executions: 10
-fork_join_benchmark Best Time: 31074.406 ms
-fork_join_benchmark Worst Time: 39099.406 ms
-fork_join_benchmark Median: 35259.670 ms
-fork_join_benchmark Arith. Mean Time: 35401.483 ms
-fork_join_benchmark Geo. Mean Time: 35315.010 ms
-fork_join_benchmark Harmonic Mean Time: 35226.220 ms
-fork_join_benchmark Std. Dev Time: 2440.644 ms
-fork_join_benchmark Lower Confidence: 33888.757 ms
-fork_join_benchmark Higher Confidence: 36914.210 ms
-fork_join_benchmark Error Window: 1512.727 ms (4.273 percent)
-fork_join_benchmark Coeff. of Variation: 0.069
-fork_join_benchmark Skewness: -0.561
+fork_join_benchmark Best Time: 25771.987 ms
+fork_join_benchmark Worst Time: 29734.491 ms
+fork_join_benchmark Median: 26691.397 ms
+fork_join_benchmark Arith. Mean Time: 26848.304 ms
+fork_join_benchmark Geo. Mean Time: 26829.127 ms
+fork_join_benchmark Harmonic Mean Time: 26810.844 ms
+fork_join_benchmark Std. Dev Time: 1039.307 ms
+fork_join_benchmark Lower Confidence: 26204.134 ms
+fork_join_benchmark Higher Confidence: 27492.473 ms
+fork_join_benchmark Error Window: 644.169 ms (2.399 percent)
+fork_join_benchmark Coeff. of Variation: 0.039
+fork_join_benchmark Skewness: 2.179
 ok
 
 ============================== SCALA/AKKA =========================================
